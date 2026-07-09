@@ -4,7 +4,7 @@ import { mkdirSync, rmSync, readdirSync } from 'node:fs'
 const SC = '/tmp/claude-1000/-home-martin-projects-tamatcha/76f1450b-16fd-4142-83e0-83b82fb8c091/scratchpad'
 const OUT = `${SC}/r3d/frames`
 const N = parseInt(process.env.FRAMES || '60')
-const WIDTH = 720
+const WIDTH = 900
 mkdirSync(OUT, { recursive: true })
 for (const f of readdirSync(OUT)) rmSync(`${OUT}/${f}`)
 

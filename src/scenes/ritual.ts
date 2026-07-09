@@ -1,7 +1,7 @@
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
-const FRAME_COUNT = 48
+const FRAME_COUNT = 44
 // import.meta.env.BASE_URL is Vite's base ('/tamatcha/'); a bare '/ritual/...'
 // would ignore the base and 404 under the project-page URL.
 const framePath = (i: number) => `${import.meta.env.BASE_URL}ritual/frame-${String(i + 1).padStart(3, '0')}.webp`

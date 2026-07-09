@@ -15,7 +15,7 @@
 import * as THREE from 'three'
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js'
 
-const W = 1100, H = 1300
+const W = 900, H = 1180
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true })
 renderer.setSize(W, H); renderer.setPixelRatio(1)
 renderer.toneMapping = THREE.ACESFilmicToneMapping
@@ -28,7 +28,7 @@ const pmrem = new THREE.PMREMGenerator(renderer)
 scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture
 
 const camera = new THREE.PerspectiveCamera(30, W / H, 0.1, 100)
-camera.position.set(0, 1.5, 8.6); camera.lookAt(0, 0.05, 0)
+camera.position.set(0, 1.2, 6.7); camera.lookAt(0, -0.05, 0)
 
 const group = new THREE.Group(); scene.add(group)
 const MATCHA = 0x74a82c, MATCHA_D = 0x5e8a34, FOREST = 0x123528
