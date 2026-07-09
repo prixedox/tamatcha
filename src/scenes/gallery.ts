@@ -8,7 +8,13 @@ export function initGallery(reduced: boolean): void {
 
   let down = false, moved = 0, startX = 0, startLeft = 0, vel = 0, lastX = 0, raf = 0
 
+  // native image drag would fight the scroll-drag (ghost image trailing the cursor)
+  strip.addEventListener('dragstart', (e) => e.preventDefault())
+
   strip.addEventListener('pointerdown', (e) => {
+    // mouse-only: touch keeps native overflow scroll + momentum (Task 4 CSS),
+    // and avoids a pointercancel leaving `down` stuck; ignore non-primary buttons.
+    if (e.pointerType !== 'mouse' || e.button !== 0) return
     down = true; moved = 0
     startX = e.clientX; startLeft = strip.scrollLeft; lastX = e.clientX; vel = 0
     cancelAnimationFrame(raf)

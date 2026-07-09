@@ -6,13 +6,15 @@ test('gallery drags horizontally and suppresses click after drag', async ({ page
   await strip.scrollIntoViewIfNeeded()
   const before = await strip.evaluate((el) => el.scrollLeft)
   const box = (await strip.boundingBox())!
+  // a suppressed click must NOT open the tile's target="_blank" Instagram link
+  const popupPromise = page.waitForEvent('popup', { timeout: 800 }).catch(() => null)
   await page.mouse.move(box.x + box.width * 0.8, box.y + box.height / 2)
   await page.mouse.down()
   await page.mouse.move(box.x + box.width * 0.2, box.y + box.height / 2, { steps: 15 })
   await page.mouse.up()
   const after = await strip.evaluate((el) => el.scrollLeft)
   expect(after).toBeGreaterThan(before)
-  expect(page.url()).not.toContain('instagram.com') // click suppressed, no navigation
+  expect(await popupPromise).toBeNull() // drag suppressed the click, no popup opened
 })
 
 test.describe('no JS', () => {
