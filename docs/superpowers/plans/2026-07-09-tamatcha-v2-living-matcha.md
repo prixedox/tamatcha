@@ -223,7 +223,7 @@ git commit -m "chore: move v1 to legacy/, scaffold Vite+TS+Playwright"
 
 **Interfaces:**
 - Consumes: `legacy/fonts.css` (10 `@font-face` blocks, woff2 data-URIs), `source-photos/*.jpg`.
-- Produces: `public/fonts/<slug>.woff2` files; `src/styles/fonts.css` with `@font-face` rules using `url('/fonts/<slug>.woff2')`; `public/img/<name>-<w>.{avif,webp,jpg}` for each source photo at widths 480 and 960 (logo only 96). Task 3 references these exact paths.
+- Produces: `public/fonts/<slug>.woff2` files; `src/styles/fonts.css` with `@font-face` rules using `url('/fonts/<slug>.woff2')`; `public/img/<name>-<w>.{avif,webp,jpg}` for each source photo at widths 480 and 640 (logo only 96). Task 3 references these exact paths.
 
 - [ ] **Step 1: Write font extraction script**
 
@@ -281,12 +281,12 @@ const SRC = 'source-photos'
 const OUT = 'public/img'
 const jobs = [
   { file: 'logo.jpg', widths: [96] },
-  { file: 'post1_festival.jpg', widths: [480, 960] },
-  { file: 'post2_menu.jpg', widths: [480, 960] },
-  { file: 'post3_latte.jpg', widths: [480, 960] },
-  { file: 'post4_fizz.jpg', widths: [480, 960] },
-  { file: 'post5_bar.jpg', widths: [480, 960] },
-  { file: 'post6_free.jpg', widths: [480, 960] },
+  { file: 'post1_festival.jpg', widths: [480, 640] },
+  { file: 'post2_menu.jpg', widths: [480, 640] },
+  { file: 'post3_latte.jpg', widths: [480, 640] },
+  { file: 'post4_fizz.jpg', widths: [480, 640] },
+  { file: 'post5_bar.jpg', widths: [480, 640] },
+  { file: 'post6_free.jpg', widths: [480, 640] },
 ]
 
 await mkdir(OUT, { recursive: true })
@@ -398,9 +398,9 @@ About: copy `legacy/template.html:385-420` as the base, with these changes:
 
 ```html
 <picture>
-  <source type="image/avif" srcset="/img/post5_bar-480.avif 480w, /img/post5_bar-960.avif 960w" sizes="(min-width: 900px) 420px, 90vw">
-  <source type="image/webp" srcset="/img/post5_bar-480.webp 480w, /img/post5_bar-960.webp 960w" sizes="(min-width: 900px) 420px, 90vw">
-  <img src="/img/post5_bar-960.jpg" alt="Interiér matcha baru Tamatcha — barista podává ledovou matchu přes barový pult" width="420" height="560" loading="lazy">
+  <source type="image/avif" srcset="/img/post5_bar-480.avif 480w, /img/post5_bar-640.avif 640w" sizes="(min-width: 900px) 420px, 90vw">
+  <source type="image/webp" srcset="/img/post5_bar-480.webp 480w, /img/post5_bar-640.webp 640w" sizes="(min-width: 900px) 420px, 90vw">
+  <img src="/img/post5_bar-640.jpg" alt="Interiér matcha baru Tamatcha — barista podává ledovou matchu přes barový pult" width="420" height="560" loading="lazy">
 </picture>
 ```
 
