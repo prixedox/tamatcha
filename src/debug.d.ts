@@ -6,6 +6,7 @@ declare global {
       tier: 'a' | 'b' | 'c'
       frames: number
       splats: number
+      pointerSplats: number
       ritualStep: number
       ritualRange: [number, number] | null
     }

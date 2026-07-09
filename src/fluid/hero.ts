@@ -75,7 +75,13 @@ async function startFluid(
     if (hasLast) {
       const dx = (x - lastX) * 900
       const dy = (y - lastY) * 900
-      if (Math.abs(dx) + Math.abs(dy) > 0.5) sim.splat(x, y, dx, dy, 0.22)
+      if (Math.abs(dx) + Math.abs(dy) > 0.5) {
+        sim.splat(x, y, dx, dy, 0.22)
+        // dedicated pointer-only counter for deterministic e2e assertions: only
+        // ever incremented here (the idle whisk and sim.splat never touch it), so
+        // a nonzero value proves the pointer-move handler fired a real splat.
+        window.__tamatcha.pointerSplats++
+      }
     }
     lastX = x; lastY = y; hasLast = true
   }

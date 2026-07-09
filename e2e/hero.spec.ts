@@ -25,30 +25,32 @@ test('tier b: noise shader runs', async ({ page }) => {
 })
 
 test('tier a: pointer movement stirs (splats increase)', async ({ page }) => {
-  // The idle whisk adds a splat every frame regardless of input, so a plain
-  // before/after count proves nothing. Compare an idle window against an
-  // equal-length window of vigorous mouse movement: the moving window must
-  // add clearly more splats than the whisk alone.
+  // `pointerSplats` is a dedicated counter incremented ONLY inside the hero's
+  // pointer-move handler (never by the idle whisk, never by sim.splat itself),
+  // so it isolates real pointer input from the always-running whisk with zero
+  // wall-clock/timing dependence: idle time can't inflate it, and it only moves
+  // when the handler actually calls sim.splat.
+  //
+  // test.slow(): the tier-A fluid sim runs a continuous rAF loop under software
+  // (swiftshader) WebGL, which saturates the main thread — so CDP-dispatched
+  // mouse input is processed slowly, especially under parallel workers. Keep the
+  // actual movement small (a couple of stepped moves already emit plenty of
+  // pointermove events) and give the test extra headroom rather than depend on
+  // wall-clock throughput.
+  test.slow()
   await page.goto('./?tier=a')
   await page.waitForFunction(() => window.__tamatcha.frames > 10)
 
-  // idle baseline: no pointer movement for 600ms
-  const idle0 = await page.evaluate(() => window.__tamatcha.splats)
-  await page.waitForTimeout(600)
-  const idleDelta = (await page.evaluate(() => window.__tamatcha.splats)) - idle0
+  // no pointer input yet, even after an idle window: pointer counter stays 0
+  await page.waitForTimeout(400)
+  expect(await page.evaluate(() => window.__tamatcha.pointerSplats)).toBe(0)
 
-  // active window: continuous vigorous movement over the hero for ~600ms
-  const move0 = await page.evaluate(() => window.__tamatcha.splats)
-  const until = Date.now() + 600
-  let i = 0
-  while (Date.now() < until) {
-    const x = 250 + (i % 2 === 0 ? 500 : 0)
-    const y = 220 + (i % 3) * 140
-    await page.mouse.move(x, y, { steps: 12 })
-    i++
-  }
-  const moveDelta = (await page.evaluate(() => window.__tamatcha.splats)) - move0
+  // a small amount of real movement over the hero: a stepped move emits one
+  // pointermove per step, so this drives the handler many times over
+  await page.mouse.move(300, 250)
+  await page.mouse.move(760, 470, { steps: 6 })
+  await page.mouse.move(360, 300, { steps: 6 })
 
-  // pointer-stir splats stack on top of the idle whisk with a wide margin
-  expect(moveDelta).toBeGreaterThan(idleDelta + 20)
+  await page.waitForFunction(() => window.__tamatcha.pointerSplats > 0)
+  expect(await page.evaluate(() => window.__tamatcha.pointerSplats)).toBeGreaterThan(0)
 })
