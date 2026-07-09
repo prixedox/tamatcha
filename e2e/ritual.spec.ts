@@ -20,11 +20,13 @@ test('ritual scene scrubs through chapters both directions', async ({ page }) =>
   expect(await page.evaluate(() => window.__tamatcha.ritualStep)).toBe(0)
 })
 
-test('reduced motion: no pin, static art visible', async ({ page }) => {
+test('reduced motion: no pin, static ritual photos visible', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await page.goto('./')
   await expect(page.locator('.pin-spacer')).toHaveCount(0)
   await expect(page.locator('.ritual--live')).toHaveCount(0)
   await page.locator('#ritual').scrollIntoViewIfNeeded()
-  await expect(page.locator('.step__art').first()).toBeVisible()
+  // photos render as a static 3-up grid (not pinned) when not live
+  await expect(page.locator('.ritual__stage .ritual__photo img').first()).toBeVisible()
+  await expect(page.locator('.ritual__photo')).toHaveCount(3)
 })

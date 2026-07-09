@@ -12,6 +12,9 @@ const jobs = [
   { file: 'post4_fizz.jpg', widths: [480, 640] },
   { file: 'post5_bar.jpg', widths: [480, 640] },
   { file: 'post6_free.jpg', widths: [480, 640] },
+  { file: 'ritual-1-sift.jpg', widths: [800, 1600] },
+  { file: 'ritual-2-whisk.jpg', widths: [800, 1600] },
+  { file: 'ritual-3-pour.jpg', widths: [800, 1600] },
 ]
 
 await mkdir(OUT, { recursive: true })
