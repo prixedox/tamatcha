@@ -39,7 +39,7 @@ Pacing principle: **wow → calm → wow → calm.** Two centerpieces (Hero, Rit
 - **Scroll exit:** as the hero scrolls away, canvas opacity/saturation eases down (cheap, no extra sim work). The sim pauses entirely when the hero is off-screen (IntersectionObserver) and while the tab is hidden.
 
 ### 3.2 O nás (Kagošima) — calm
-- Headline and paragraphs mask-reveal line by line on scroll (once, not scrubbed).
+- Headline and paragraphs mask-reveal on scroll (clip-path sweep, once, not scrubbed).
 - A hand-drawn SVG journey line (Kagoshima → Ostrava motif) draws itself via stroke-dashoffset, echoing v1's stroke accents.
 - 2–3 code-drawn tea-leaf SVGs drift with gentle parallax (`translateY` tied to scroll, transform-only).
 - The interior photo and the three "props" (Prémiová kvalita / Energie bez propadu / Čerstvě připravená) keep v1's reveal treatment, upgraded to GSAP.
@@ -99,7 +99,7 @@ Pacing principle: **wow → calm → wow → calm.** Two centerpieces (Hero, Rit
   └── .github/workflows/deploy.yml
   ```
 - **Progressive enhancement contract:** `index.html` contains all content, semantic and styled, with animations layered on by JS. The `js` class on `<html>` gates any style that hides content pre-reveal (v1's pattern).
-- **Module isolation:** each scene module exposes `init(ctx): () => void` (returns teardown), takes its root element + tier; no cross-module imports except shared `tiers.ts`/`scroll.ts`.
+- **Module isolation:** each scene module exposes a single `init...` function taking only what it needs (tier / reduced-motion flag); modules find their own DOM root and do not import each other (shared imports limited to `tiers.ts` and gsap).
 
 ## 6. Fluid sim & tier system
 
