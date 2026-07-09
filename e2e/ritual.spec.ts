@@ -1,0 +1,30 @@
+import { test, expect } from '@playwright/test'
+
+async function scrollToRitual(page: import('@playwright/test').Page, frac: number) {
+  await page.evaluate((f) => {
+    const [start, end] = window.__tamatcha.ritualRange!
+    window.scrollTo(0, start + (end - start) * f)
+  }, frac)
+  await page.waitForTimeout(600) // let Lenis/ScrollTrigger settle
+}
+
+test('ritual scene scrubs through chapters both directions', async ({ page }) => {
+  await page.goto('./?tier=c')
+  await page.waitForFunction(() => window.__tamatcha.ritualRange !== null)
+  await scrollToRitual(page, 0.5) // middle => chapter 1 (Šleháme)
+  expect(await page.evaluate(() => window.__tamatcha.ritualStep)).toBe(1)
+  await expect(page.locator('.step[data-step="1"]')).toHaveClass(/active/)
+  await scrollToRitual(page, 0.9) // => chapter 2
+  expect(await page.evaluate(() => window.__tamatcha.ritualStep)).toBe(2)
+  await scrollToRitual(page, 0.1) // back => chapter 0
+  expect(await page.evaluate(() => window.__tamatcha.ritualStep)).toBe(0)
+})
+
+test('reduced motion: no pin, static art visible', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await page.goto('./')
+  await expect(page.locator('.pin-spacer')).toHaveCount(0)
+  await expect(page.locator('.ritual--live')).toHaveCount(0)
+  await page.locator('#ritual').scrollIntoViewIfNeeded()
+  await expect(page.locator('.step__art').first()).toBeVisible()
+})

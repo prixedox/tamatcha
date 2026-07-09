@@ -2,10 +2,15 @@ import { test, expect } from '@playwright/test'
 
 test('reveals appear on scroll', async ({ page }) => {
   await page.goto('./?tier=c')
-  const step = page.locator('.step[data-step="2"]')
-  await expect(step).not.toHaveClass(/\bin\b/)
-  await step.scrollIntoViewIfNeeded()
-  await expect(step).toHaveClass(/\bin\b/)
+  // Not `.step` — Task 9's live ritual scene pre-marks all `.step` elements `.in`
+  // immediately (captions are highlighted via `.active`, not the reveal-on-scroll
+  // mechanism). Use a `.mcard` (menu card) instead: it's a plain `.reveal` element
+  // below the fold, untouched by the ritual pin, so it still proves generic
+  // scroll-reveal works.
+  const card = page.locator('.mcard').first()
+  await expect(card).not.toHaveClass(/\bin\b/)
+  await card.scrollIntoViewIfNeeded()
+  await expect(card).toHaveClass(/\bin\b/)
 })
 
 test('reduced motion: everything visible immediately, native scroll', async ({ page }) => {

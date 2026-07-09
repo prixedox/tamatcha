@@ -14,5 +14,7 @@ async function boot() {
   initScroll(reduced)
   const { initHero } = await import('./fluid/hero')
   initHero(tier)
+  const { initRitual } = await import('./scenes/ritual')
+  initRitual(reduced)
 }
 boot()

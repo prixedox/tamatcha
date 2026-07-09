@@ -1,5 +1,11 @@
 *,*::before,*::after{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+/* Lenis (scroll.ts) owns smooth scrolling once JS boots; native CSS smooth-scroll
+   racing with Lenis's own rAF-driven scroll can leave native scrollTo() calls
+   (browser or test) captured mid-animation by GSAP ScrollTrigger's refresh, which
+   snapshots/restores scroll position during setup. Keep native smooth-scroll only
+   for the no-JS fallback. */
+html.js{scroll-behavior:auto}
 body{
   margin:0;
   background:var(--cream);
