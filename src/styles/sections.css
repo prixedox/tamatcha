@@ -216,3 +216,43 @@ html:not(.js) .ig__strip{display:grid;grid-template-columns:repeat(auto-fit,minm
 .about__copy .reveal.in{clip-path:inset(0 0 -8% 0);transition:clip-path 1s var(--ease),opacity .6s var(--ease),transform .8s var(--ease)}
 html:not(.js) .about__copy .reveal{clip-path:none}
 @media (prefers-reduced-motion: reduce){.about__copy .reveal{clip-path:none}}
+
+/* ===== menu card fx ===== */
+.mcard{position:relative;overflow:hidden}
+.mcard > :not(.mcard__fx){position:relative;z-index:1}
+.mcard__fx{position:absolute;inset:0;pointer-events:none;opacity:.55}
+.mcard__fx span{position:absolute;display:block}
+
+.fx-fizz span{bottom:-14px;border-radius:50%;background:rgba(143,185,75,.34);width:10px;height:10px;animation:fxBubble 6s linear infinite}
+.fx-fizz span:nth-child(1){left:12%}
+.fx-fizz span:nth-child(2){left:32%;width:6px;height:6px;animation-delay:1.4s;animation-duration:4.6s}
+.fx-fizz span:nth-child(3){left:55%;animation-delay:.7s}
+.fx-fizz span:nth-child(4){left:72%;width:7px;height:7px;animation-delay:2.2s;animation-duration:5.2s}
+.fx-fizz span:nth-child(5){left:88%;width:5px;height:5px;animation-delay:3.1s;animation-duration:4.2s}
+@keyframes fxBubble{to{transform:translateY(-360px);opacity:0}}
+
+.fx-cloud span{border-radius:50%;background:rgba(236,230,215,.5);filter:blur(16px);width:120px;height:56px;animation:fxDrift 9s ease-in-out infinite alternate}
+.fx-cloud span:nth-child(1){top:14%;left:-6%}
+.fx-cloud span:nth-child(2){top:44%;right:-8%;animation-delay:1.8s}
+.fx-cloud span:nth-child(3){bottom:8%;left:22%;animation-delay:3.4s}
+@keyframes fxDrift{to{transform:translateX(36px)}}
+
+.fx-latte{inset:-45%;background:conic-gradient(from 0deg at 55% 45%,
+  rgba(143,185,75,.16), rgba(244,239,228,.30), rgba(94,138,52,.16),
+  rgba(244,239,228,.30), rgba(143,185,75,.16));
+  animation:fxSwirl 16s linear infinite}
+@keyframes fxSwirl{to{transform:rotate(1turn)}}
+
+.fx-yerba span{width:26px;height:12px;border-radius:12px 0;background:rgba(94,138,52,.24);animation:fxSway 7s ease-in-out infinite alternate}
+.fx-yerba span:nth-child(1){top:18%;left:10%}
+.fx-yerba span:nth-child(2){top:38%;right:14%;animation-delay:1.2s}
+.fx-yerba span:nth-child(3){bottom:26%;left:30%;animation-delay:2.6s}
+.fx-yerba span:nth-child(4){bottom:10%;right:32%;animation-delay:3.8s}
+@keyframes fxSway{to{transform:translate(14px,10px) rotate(24deg)}}
+
+/* run only when the card has revealed; JS-less users get static (paused at first frame) */
+.js .mcard__fx, .js .mcard__fx span{animation-play-state:paused}
+.js .mcard.in .mcard__fx, .js .mcard.in .mcard__fx span{animation-play-state:running}
+@media (prefers-reduced-motion: reduce){
+  .mcard__fx, .mcard__fx span{animation:none}
+}
