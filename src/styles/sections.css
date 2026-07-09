@@ -256,3 +256,14 @@ html:not(.js) .about__copy .reveal{clip-path:none}
 @media (prefers-reduced-motion: reduce){
   .mcard__fx, .mcard__fx span{animation:none}
 }
+
+.about__media{position:relative}
+.about__journey{position:absolute;inset:auto -8% -6% auto;width:70%;color:var(--matcha-deep);opacity:.5;z-index:0}
+.about__journey path{transition:stroke-dashoffset 1.6s var(--ease)}
+.about__journey.in path{stroke-dashoffset:0}
+.about__leaf{position:absolute;width:38px;color:var(--matcha-deep);opacity:.4;z-index:0}
+.about__leaf:nth-of-type(2){top:6%;left:-4%}
+.about__leaf:nth-of-type(3){top:40%;right:-6%;transform:rotate(40deg)}
+.about__leaf:nth-of-type(4){bottom:12%;left:8%;transform:rotate(-30deg)}
+.grid-lines .route{stroke-dasharray:520;stroke-dashoffset:520;transition:stroke-dashoffset 1.8s var(--ease)}
+.mapcard.in .grid-lines .route{stroke-dashoffset:0}

@@ -18,5 +18,7 @@ async function boot() {
   initRitual(reduced)
   const { initGallery } = await import('./scenes/gallery')
   initGallery(reduced)
+  const { initAccents } = await import('./scenes/accents')
+  initAccents(reduced)
 }
 boot()
