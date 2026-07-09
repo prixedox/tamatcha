@@ -12,13 +12,13 @@ const b = await chromium.launch({ args: ['--enable-unsafe-swiftshader', '--ignor
 const ctx = await b.newContext({ viewport: { width: 1200, height: 1450 }, deviceScaleFactor: 1 })
 const p = await ctx.newPage()
 p.on('pageerror', (e) => console.log('PAGEERROR:', e.message.slice(0, 160)))
-await p.goto('http://localhost:8099/render.html')
+await p.goto('file://' + SC + '/r3d/render.html')
 const ok = await p.waitForFunction(() => window.__ready === true, { timeout: 25000 }).then(() => true).catch(() => false)
 console.log('ready:', ok)
 await p.waitForTimeout(500)
 for (let i = 0; i < N; i++) {
-  const deg = (i * 360) / N
-  await p.evaluate((d) => window.renderFrame(d), deg)
+  const prog = N > 1 ? i / (N - 1) : 0 // scroll progress 0..1: fill then rotate
+  await p.evaluate((d) => window.renderFrame(d), prog)
   await p.waitForTimeout(90)
   const png = await p.locator('canvas').screenshot({ omitBackground: true })
   const n = String(i + 1).padStart(3, '0')
