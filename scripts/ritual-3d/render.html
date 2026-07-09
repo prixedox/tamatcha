@@ -1,0 +1,80 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>html,body{margin:0;padding:0;background:transparent}canvas{display:block}</style>
+<script type="importmap">
+{"imports":{
+  "three":"https://unpkg.com/three@0.160.0/build/three.module.js",
+  "three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"
+}}
+</script>
+</head>
+<body>
+<script type="module">
+import * as THREE from 'three'
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js'
+
+const W = 1100, H = 1300
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true })
+renderer.setSize(W, H); renderer.setPixelRatio(1)
+renderer.toneMapping = THREE.ACESFilmicToneMapping
+renderer.toneMappingExposure = 1.1
+renderer.outputColorSpace = THREE.SRGBColorSpace
+document.body.appendChild(renderer.domElement)
+
+const scene = new THREE.Scene()
+const pmrem = new THREE.PMREMGenerator(renderer)
+scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture
+
+const camera = new THREE.PerspectiveCamera(30, W / H, 0.1, 100)
+camera.position.set(0, 1.5, 8.6); camera.lookAt(0, 0.05, 0)
+
+const group = new THREE.Group(); scene.add(group)
+const MATCHA = 0x74a82c, MATCHA_D = 0x5e8a34, FOREST = 0x123528
+
+function build(labelTex) {
+  // opaque printed cup body (label wraps around)
+  const body = new THREE.Mesh(
+    new THREE.CylinderGeometry(1.06, 0.9, 2.9, 128, 1, true),
+    new THREE.MeshStandardMaterial({ map: labelTex, roughness: 0.62, metalness: 0.0, envMapIntensity: 0.7, side: THREE.DoubleSide })
+  )
+  body.position.y = -0.1; group.add(body)
+  // bottom cap
+  const bottom = new THREE.Mesh(new THREE.CircleGeometry(0.9, 96), new THREE.MeshStandardMaterial({ color: FOREST, roughness: 0.7 }))
+  bottom.rotation.x = -Math.PI / 2; bottom.position.y = -1.55; group.add(bottom)
+  // rim ring
+  const rim = new THREE.Mesh(new THREE.TorusGeometry(1.06, 0.028, 16, 128), new THREE.MeshStandardMaterial({ color: 0x1b4636, roughness: 0.45 }))
+  rim.rotation.x = Math.PI / 2; rim.position.y = 1.35; group.add(rim)
+  // matcha surface + frothy foam dome at the rim
+  const matcha = new THREE.Mesh(new THREE.CircleGeometry(1.04, 96), new THREE.MeshStandardMaterial({ color: MATCHA, roughness: 0.5 }))
+  matcha.rotation.x = -Math.PI / 2; matcha.position.y = 1.33; group.add(matcha)
+  // frothy foam dome + matcha dusting (clean, no messy ice)
+  const foam = new THREE.Mesh(new THREE.SphereGeometry(1.03, 80, 32, 0, Math.PI * 2, 0, Math.PI / 2), new THREE.MeshStandardMaterial({ color: 0xe6ebd2, roughness: 1 }))
+  foam.scale.y = 0.30; foam.position.y = 1.33; group.add(foam)
+  const dust = new THREE.Mesh(new THREE.CircleGeometry(0.72, 48), new THREE.MeshStandardMaterial({ color: MATCHA_D, roughness: 1 }))
+  dust.rotation.x = -Math.PI / 2; dust.position.y = 1.46; group.add(dust)
+  const dust2 = new THREE.Mesh(new THREE.CircleGeometry(0.34, 40), new THREE.MeshStandardMaterial({ color: 0x4e7328, roughness: 1 }))
+  dust2.rotation.x = -Math.PI / 2; dust2.position.y = 1.47; dust2.position.x = 0.22; group.add(dust2)
+}
+
+// soft contact shadow
+const sc = document.createElement('canvas'); sc.width = sc.height = 256
+const sx = sc.getContext('2d'); const rg = sx.createRadialGradient(128, 128, 8, 128, 128, 128)
+rg.addColorStop(0, 'rgba(18,40,28,0.42)'); rg.addColorStop(1, 'rgba(18,40,28,0)')
+sx.fillStyle = rg; sx.fillRect(0, 0, 256, 256)
+const shadow = new THREE.Mesh(new THREE.PlaneGeometry(4.8, 3.3), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(sc), transparent: true, depthWrite: false }))
+shadow.rotation.x = -Math.PI / 2; shadow.position.y = -1.57; scene.add(shadow)
+
+const key = new THREE.DirectionalLight(0xffffff, 2.0); key.position.set(4, 7, 5); scene.add(key)
+const fill = new THREE.DirectionalLight(0xffffff, 1.1); fill.position.set(-5, 3, -4); scene.add(fill)
+scene.add(new THREE.AmbientLight(0xffffff, 0.18))
+
+window.renderFrame = (deg) => { group.rotation.y = deg * Math.PI / 180; renderer.render(scene, camera) }
+new THREE.TextureLoader().load('label.png', (tex) => {
+  tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 8; tex.wrapS = THREE.RepeatWrapping
+  build(tex); renderer.render(scene, camera); window.__ready = true
+})
+</script>
+</body>
+</html>

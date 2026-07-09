@@ -1,7 +1,7 @@
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
-const FRAME_COUNT = 56
+const FRAME_COUNT = 48
 // import.meta.env.BASE_URL is Vite's base ('/tamatcha/'); a bare '/ritual/...'
 // would ignore the base and 404 under the project-page URL.
 const framePath = (i: number) => `${import.meta.env.BASE_URL}ritual/frame-${String(i + 1).padStart(3, '0')}.webp`
@@ -29,7 +29,8 @@ function createRitualRenderer(canvas: HTMLCanvasElement): (p01: number) => void 
     if (canvas.width !== cw || canvas.height !== ch) { canvas.width = cw; canvas.height = ch; lastDrawn = -1 }
     if (idx === lastDrawn) return
     lastDrawn = idx
-    const scale = Math.max(cw / img.naturalWidth, ch / img.naturalHeight)
+    // contain-fit: the transparent cup floats fully-visible on the stage backdrop
+    const scale = Math.min(cw / img.naturalWidth, ch / img.naturalHeight)
     const dw = img.naturalWidth * scale, dh = img.naturalHeight * scale
     ctx.clearRect(0, 0, cw, ch)
     ctx.drawImage(img, (cw - dw) / 2, (ch - dh) / 2, dw, dh)
