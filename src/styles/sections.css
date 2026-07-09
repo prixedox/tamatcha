@@ -251,7 +251,7 @@ html:not(.js) .about__copy .reveal{clip-path:none}
 @keyframes fxSway{to{transform:translate(14px,10px) rotate(24deg)}}
 
 /* run only when the card has revealed; JS-less users get static (paused at first frame) */
-.js .mcard__fx, .js .mcard__fx span{animation-play-state:paused}
+.mcard__fx, .mcard__fx span{animation-play-state:paused}
 .js .mcard.in .mcard__fx, .js .mcard.in .mcard__fx span{animation-play-state:running}
 @media (prefers-reduced-motion: reduce){
   .mcard__fx, .mcard__fx span{animation:none}

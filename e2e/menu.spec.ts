@@ -12,3 +12,14 @@ test('menu fx layers present, decorative, and text stays readable', async ({ pag
   expect(z).toBe('1')
   await expect(page.locator('.mcard h3').first()).toBeVisible()
 })
+
+test.describe('no JavaScript', () => {
+  test.use({ javaScriptEnabled: false })
+
+  test('menu fx are paused (static first frame) without JS', async ({ page }) => {
+    await page.goto('./')
+    const state = await page.locator('.mcard__fx').first().evaluate(
+      (el) => getComputedStyle(el).animationPlayState)
+    expect(state).toBe('paused')
+  })
+})
