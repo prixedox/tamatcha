@@ -18,12 +18,20 @@ export function initHero(tier: Tier): void {
     window.__tamatcha.tier = t
   }
 
+  // Mount the Tier-B noise field on a FRESH canvas. When Tier A downgrades it
+  // permanently loses the WebGL context on its canvas, and getContext() would
+  // hand that dead context straight back — so we swap in a clean clone
+  // (preserving class + aria-hidden) and mount noise on that live node.
   const mountNoise = () => {
+    const current = hero.querySelector<HTMLCanvasElement>('.hero__canvas')
+    if (!current) { setTier('c'); return }
+    const fresh = current.cloneNode(false) as HTMLCanvasElement
+    current.replaceWith(fresh)
     try {
-      startNoise(hero, canvas)
+      startNoise(hero, fresh)
       hero.classList.add('hero--gl')
       setTier('b')
-      fadeOnScroll(hero, canvas)
+      fadeOnScroll(hero, fresh)
     } catch {
       setTier('c')
       hero.classList.remove('hero--gl')
@@ -34,8 +42,8 @@ export function initHero(tier: Tier): void {
   startFluid(hero, canvas, mountNoise, setTier)
 }
 
-function fadeOnScroll(hero: HTMLElement, canvas: HTMLCanvasElement): void {
-  gsap.to(canvas, {
+function fadeOnScroll(hero: HTMLElement, canvas: HTMLCanvasElement): gsap.core.Tween {
+  return gsap.to(canvas, {
     opacity: 0.12, ease: 'none',
     scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: true },
   })
@@ -56,11 +64,11 @@ async function startFluid(
   }
   hero.classList.add('hero--gl')
   setTier('a')
-  fadeOnScroll(hero, canvas)
+  const fadeTween = fadeOnScroll(hero, canvas)
 
   // pointer stir: listener on the SECTION so text overlay doesn't block it
   let lastX = 0, lastY = 0, hasLast = false
-  hero.addEventListener('pointermove', (e) => {
+  const onPointerMove = (e: PointerEvent) => {
     const r = canvas.getBoundingClientRect()
     const x = (e.clientX - r.left) / r.width
     const y = 1 - (e.clientY - r.top) / r.height
@@ -70,14 +78,31 @@ async function startFluid(
       if (Math.abs(dx) + Math.abs(dy) > 0.5) sim.splat(x, y, dx, dy, 0.22)
     }
     lastX = x; lastY = y; hasLast = true
-  })
-  hero.addEventListener('pointerleave', () => { hasLast = false })
+  }
+  const onPointerLeave = () => { hasLast = false }
+  hero.addEventListener('pointermove', onPointerMove)
+  hero.addEventListener('pointerleave', onPointerLeave)
 
   // pause when hero off-screen or tab hidden
   let visible = true, pageVisible = true
-  new IntersectionObserver((ents) => { visible = ents[0].isIntersecting }).observe(hero)
-  document.addEventListener('visibilitychange', () => { pageVisible = !document.hidden })
-  window.addEventListener('resize', () => sim.resize())
+  const io = new IntersectionObserver((ents) => { visible = ents[0].isIntersecting })
+  io.observe(hero)
+  const onVisibility = () => { pageVisible = !document.hidden }
+  document.addEventListener('visibilitychange', onVisibility)
+  const onResize = () => sim.resize()
+  window.addEventListener('resize', onResize)
+
+  // remove every Tier-A hook so nothing from the dead loop lingers once we
+  // downgrade to the noise tier
+  const teardown = () => {
+    hero.removeEventListener('pointermove', onPointerMove)
+    hero.removeEventListener('pointerleave', onPointerLeave)
+    document.removeEventListener('visibilitychange', onVisibility)
+    window.removeEventListener('resize', onResize)
+    io.disconnect()
+    fadeTween.scrollTrigger?.kill()
+    fadeTween.kill()
+  }
 
   // benchmark state
   let frameCount = 0
@@ -112,6 +137,7 @@ async function startFluid(
             frameCount = 0; sampleSum = 0 // re-benchmark at low quality
           } else {
             sim.destroy()
+            teardown()
             fallback()
             return
           }

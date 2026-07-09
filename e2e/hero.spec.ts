@@ -25,11 +25,30 @@ test('tier b: noise shader runs', async ({ page }) => {
 })
 
 test('tier a: pointer movement stirs (splats increase)', async ({ page }) => {
+  // The idle whisk adds a splat every frame regardless of input, so a plain
+  // before/after count proves nothing. Compare an idle window against an
+  // equal-length window of vigorous mouse movement: the moving window must
+  // add clearly more splats than the whisk alone.
   await page.goto('./?tier=a')
   await page.waitForFunction(() => window.__tamatcha.frames > 10)
-  const s1 = await page.evaluate(() => window.__tamatcha.splats)
-  await page.mouse.move(300, 300)
-  await page.mouse.move(600, 400, { steps: 20 })
-  const s2 = await page.evaluate(() => window.__tamatcha.splats)
-  expect(s2).toBeGreaterThan(s1)
+
+  // idle baseline: no pointer movement for 600ms
+  const idle0 = await page.evaluate(() => window.__tamatcha.splats)
+  await page.waitForTimeout(600)
+  const idleDelta = (await page.evaluate(() => window.__tamatcha.splats)) - idle0
+
+  // active window: continuous vigorous movement over the hero for ~600ms
+  const move0 = await page.evaluate(() => window.__tamatcha.splats)
+  const until = Date.now() + 600
+  let i = 0
+  while (Date.now() < until) {
+    const x = 250 + (i % 2 === 0 ? 500 : 0)
+    const y = 220 + (i % 3) * 140
+    await page.mouse.move(x, y, { steps: 12 })
+    i++
+  }
+  const moveDelta = (await page.evaluate(() => window.__tamatcha.splats)) - move0
+
+  // pointer-stir splats stack on top of the idle whisk with a wide margin
+  expect(moveDelta).toBeGreaterThan(idleDelta + 20)
 })
