@@ -1,31 +1,53 @@
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
-// Crossfade the three real ritual photos (sift → whisk → pour) as the pinned
-// section scrubs. progress is 0..3 (one unit per chapter). Deterministic: the
-// same progress always yields the same visual, so reverse-scrubbing matches.
-export function createRitualRenderer(photos: HTMLElement[]): (progress: number) => void {
-  return (progress: number) => {
-    const chapter = Math.min(Math.floor(progress), 2)
-    const local = progress - chapter // 0..1 within the current chapter (drives ken-burns zoom)
-    photos.forEach((p, i) => {
-      p.classList.toggle('active', i === chapter)
-      p.style.setProperty('--kb', i === chapter ? local.toFixed(3) : '0')
-    })
-    window.__tamatcha.ritualStep = chapter
+const FRAME_COUNT = 56
+const framePath = (i: number) => `/ritual/frame-${String(i + 1).padStart(3, '0')}.webp`
+
+// Preload the whisk-video frame sequence and return a drawer that paints the
+// frame for a given progress (0..1) onto the canvas, cover-fit. Frames not yet
+// decoded are skipped, so the CSS poster (whisk still) shows through until they
+// arrive. Deterministic: the same progress always yields the same frame, so
+// reverse-scrubbing matches.
+function createRitualRenderer(canvas: HTMLCanvasElement): (p01: number) => void {
+  const ctx = canvas.getContext('2d')!
+  const frames = Array.from({ length: FRAME_COUNT }, (_, i) => {
+    const img = new Image()
+    img.src = framePath(i)
+    return img
+  })
+  let lastDrawn = -1
+
+  function paint(idx: number): void {
+    const img = frames[idx]
+    if (!img.complete || img.naturalWidth === 0) return
+    const dpr = Math.min(window.devicePixelRatio || 1, 2)
+    const cw = Math.round(canvas.clientWidth * dpr)
+    const ch = Math.round(canvas.clientHeight * dpr)
+    if (canvas.width !== cw || canvas.height !== ch) { canvas.width = cw; canvas.height = ch; lastDrawn = -1 }
+    if (idx === lastDrawn) return
+    lastDrawn = idx
+    const scale = Math.max(cw / img.naturalWidth, ch / img.naturalHeight)
+    const dw = img.naturalWidth * scale, dh = img.naturalHeight * scale
+    ctx.clearRect(0, 0, cw, ch)
+    ctx.drawImage(img, (cw - dw) / 2, (ch - dh) / 2, dw, dh)
   }
+
+  // paint the first frame as soon as it decodes, to cover the CSS poster
+  frames[0].addEventListener('load', () => { if (lastDrawn === -1) paint(0) })
+
+  return (p01: number) => paint(Math.max(0, Math.min(FRAME_COUNT - 1, Math.round(p01 * (FRAME_COUNT - 1)))))
 }
 
 export function initRitual(reduced: boolean): void {
   const section = document.querySelector<HTMLElement>('#ritual')
-  const stage = section?.querySelector<HTMLElement>('.ritual__stage')
-  const photos = stage ? Array.from(stage.querySelectorAll<HTMLElement>('.ritual__photo')) : []
-  // reduced motion / no-JS: leave the photos as the static 3-up grid the CSS renders.
-  if (!section || !stage || photos.length < 3 || reduced) return
+  const canvas = section?.querySelector<HTMLCanvasElement>('.ritual__canvas')
+  // reduced motion / no-JS: leave the static 3-photo grid the CSS renders.
+  if (!section || !canvas || reduced) return
 
   gsap.registerPlugin(ScrollTrigger)
   section.classList.add('ritual--live')
-  const draw = createRitualRenderer(photos)
+  const draw = createRitualRenderer(canvas)
   const steps = Array.from(section.querySelectorAll<HTMLElement>('.step'))
   steps.forEach((s) => s.classList.add('in')) // captions handled by active state, not reveal
 
@@ -37,9 +59,9 @@ export function initRitual(reduced: boolean): void {
     scrub: 0.4,
     onRefresh: (self) => { window.__tamatcha.ritualRange = [self.start, self.end] },
     onUpdate: (self) => {
-      const progress = self.progress * 3
-      draw(Math.min(progress, 2.999))
-      const chapter = Math.min(Math.floor(progress), 2)
+      draw(self.progress)
+      const chapter = Math.min(Math.floor(self.progress * 3), 2)
+      window.__tamatcha.ritualStep = chapter
       steps.forEach((s, i) => s.classList.toggle('active', i === chapter))
     },
   })
