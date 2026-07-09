@@ -2,7 +2,9 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 const FRAME_COUNT = 56
-const framePath = (i: number) => `/ritual/frame-${String(i + 1).padStart(3, '0')}.webp`
+// import.meta.env.BASE_URL is Vite's base ('/tamatcha/'); a bare '/ritual/...'
+// would ignore the base and 404 under the project-page URL.
+const framePath = (i: number) => `${import.meta.env.BASE_URL}ritual/frame-${String(i + 1).padStart(3, '0')}.webp`
 
 // Preload the whisk-video frame sequence and return a drawer that paints the
 // frame for a given progress (0..1) onto the canvas, cover-fit. Frames not yet
