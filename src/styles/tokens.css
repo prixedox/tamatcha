@@ -9,8 +9,7 @@
   --paper:#F8F4EB;         /* lightest paper */
   --oxblood:#43201D;       /* their footer bar */
   --ink:#1B241E;           /* text on cream (green-biased near-black) */
-  --ink-60:rgba(27,36,30,.62);
-  --ink-42:rgba(27,36,30,.42);
+  --ink-60:rgba(27,36,30,.68);
   --line:rgba(24,58,44,.14);
   --cream-70:rgba(236,230,215,.72);
   --cream-46:rgba(236,230,215,.46);

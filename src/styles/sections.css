@@ -26,7 +26,7 @@
 .hero__sub{max-width:38ch;margin-top:1.4rem;color:var(--cream-70);font-size:clamp(1.05rem,1.4vw,1.24rem);line-height:1.6}
 .hero__cta{display:flex;flex-wrap:wrap;gap:.9rem;margin-top:2.1rem}
 .hero__meta{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem 1.1rem;margin-top:2.4rem;
-  font-size:.92rem;color:var(--cream-46);font-weight:600}
+  font-size:.92rem;color:var(--cream-70);font-weight:600}
 .hero__meta b{color:var(--cream-70);font-weight:700}
 .hero__meta .dot{width:5px;height:5px;border-radius:50%;background:var(--matcha);opacity:.7}
 
@@ -75,7 +75,7 @@
 .mcard:hover{transform:translateY(-6px);box-shadow:0 26px 50px -30px rgba(24,58,44,.5);border-color:transparent}
 .mcard__top{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem}
 .mcard h3{font-size:1.55rem;letter-spacing:-.02em}
-.mcard .ml{font-size:.78rem;font-weight:700;color:var(--ink-42);letter-spacing:.08em;text-transform:uppercase;margin-top:.35rem}
+.mcard .ml{font-size:.78rem;font-weight:700;color:var(--ink-60);letter-spacing:.08em;text-transform:uppercase;margin-top:.35rem}
 .mcard .price{font-family:var(--display);font-weight:800;font-size:1.7rem;color:var(--forest);white-space:nowrap;line-height:1}
 .mcard .price sup{font-size:.62em;font-weight:700;margin-left:.15em;top:-.2em}
 .mcard .formula{font-size:.9rem;color:var(--matcha-deep);font-weight:600}
@@ -108,7 +108,7 @@
 .info__row{display:flex;gap:1rem;align-items:flex-start;padding:1.2rem 0;border-bottom:1px solid rgba(236,230,215,.12)}
 .info__row .ic{flex:none;width:42px;height:42px;border-radius:11px;background:rgba(143,185,75,.14);color:var(--matcha);display:grid;place-items:center}
 .info__row .ic svg{width:20px;height:20px}
-.info__row h3{font-family:var(--body);font-weight:700;font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;color:var(--cream-46)}
+.info__row h3{font-family:var(--body);font-weight:700;font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;color:var(--cream-70)}
 .info__row p{color:var(--cream);font-size:1.08rem;margin-top:.25rem;line-height:1.45}
 .info__row a p:hover,.info__row a:hover p{color:var(--matcha)}
 .hours{display:flex;gap:2.2rem}
@@ -130,18 +130,18 @@
 .mapcard__pin span{font-weight:700;font-size:.82rem;background:var(--cream);color:var(--ink);padding:.3em .7em;border-radius:100px}
 .mapcard__bar{position:relative;background:rgba(14,39,28,.78);backdrop-filter:blur(6px);padding:1.1rem 1.3rem;display:flex;justify-content:space-between;align-items:center;gap:1rem}
 .mapcard__bar b{font-size:1rem}
-.mapcard__bar small{display:block;color:var(--cream-46);font-size:.82rem;font-weight:600}
+.mapcard__bar small{display:block;color:var(--cream-70);font-size:.82rem;font-weight:600}
 
 /* ============ FOOTER ============ */
 .footer{background:var(--oxblood);color:var(--cream)}
 .footer__in{display:flex;flex-wrap:wrap;justify-content:space-between;gap:2rem;padding-block:clamp(3rem,6vw,4.5rem)}
 .footer .brand{color:var(--cream)}
-.footer__col h4{font-family:var(--body);font-weight:700;font-size:.76rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(236,230,215,.5);margin:0 0 .9rem}
+.footer__col h4{font-family:var(--body);font-weight:700;font-size:.76rem;letter-spacing:.16em;text-transform:uppercase;color:var(--cream-70);margin:0 0 .9rem}
 .footer__col p,.footer__col a{color:var(--cream-70);font-size:.96rem;line-height:1.9;display:block}
 .footer__col a:hover{color:var(--matcha)}
 .footer__brandcol{max-width:280px}
-.footer__brandcol p{color:var(--cream-46);font-size:.92rem;margin-top:1rem;line-height:1.6}
-.footer__bottom{border-top:1px solid rgba(236,230,215,.14);padding-block:1.5rem;display:flex;flex-wrap:wrap;justify-content:space-between;gap:.6rem;font-size:.82rem;color:var(--cream-46)}
+.footer__brandcol p{color:var(--cream-70);font-size:.92rem;margin-top:1rem;line-height:1.6}
+.footer__bottom{border-top:1px solid rgba(236,230,215,.14);padding-block:1.5rem;display:flex;flex-wrap:wrap;justify-content:space-between;gap:.6rem;font-size:.82rem;color:var(--cream-70)}
 
 /* ============ RESPONSIVE (ported) ============ */
 @media (max-width:900px){
@@ -194,9 +194,16 @@
 .ritual--live .step__art{display:none}
 .ritual--live .steps{margin-top:1.2rem}
 /* .reveal repeated to out-specificity ".js .reveal.in{opacity:1}" (base.css),
-   which otherwise ties/beats this and defeats the inactive-chapter dimming */
-.ritual--live .step.reveal{opacity:.35;transition:opacity .3s var(--ease)}
-.ritual--live .step.reveal.active{opacity:1}
+   which otherwise ties/beats this and defeats the inactive-chapter dimming.
+   Dimming is done via solid recolors (not opacity) so inactive captions still
+   clear WCAG AA contrast against --forest — see Task 13 a11y pass. */
+.ritual--live .step.reveal{transition:color .3s var(--ease)}
+.ritual--live .step.reveal .step__n{color:#83AC48}
+.ritual--live .step.reveal h3{color:#97A193}
+.ritual--live .step.reveal p{color:#97A193}
+.ritual--live .step.reveal.active .step__n{color:var(--matcha)}
+.ritual--live .step.reveal.active h3{color:var(--cream)}
+.ritual--live .step.reveal.active p{color:var(--cream-70)}
 
 /* ===== gallery: strip with JS, grid without ===== */
 .js .ig__strip{display:flex;gap:1rem;overflow-x:auto;scroll-snap-type:x proximity;padding-bottom:1rem;cursor:grab;-webkit-overflow-scrolling:touch}
