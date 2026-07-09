@@ -1,0 +1,639 @@
+<title>Tamatcha — první matcha bar v Ostravě</title>
+<style>
+/*__FONTS__*/
+
+/* ============ TOKENS ============ */
+:root{
+  --forest:#183A2C;        /* primary deep matcha ground */
+  --forest-2:#0E271C;      /* darkest, footer / gradients */
+  --forest-3:#21503C;      /* lifted forest */
+  --matcha:#8FB94B;        /* bright matcha accent (on dark) */
+  --matcha-deep:#5E8A34;   /* accent that stays legible on cream */
+  --cream:#ECE6D7;         /* warm paper ground */
+  --cream-2:#F4EFE4;       /* card cream */
+  --paper:#F8F4EB;         /* lightest paper */
+  --oxblood:#43201D;       /* their footer bar */
+  --ink:#1B241E;           /* text on cream (green-biased near-black) */
+  --ink-60:rgba(27,36,30,.62);
+  --ink-42:rgba(27,36,30,.42);
+  --line:rgba(24,58,44,.14);
+  --cream-70:rgba(236,230,215,.72);
+  --cream-46:rgba(236,230,215,.46);
+
+  --wrap:1200px;
+  --pad:clamp(1.25rem,5vw,3rem);
+  --sp-section:clamp(4.5rem,9vw,8rem);
+  --r:20px;
+
+  --display:'Bricolage Grotesque',ui-sans-serif,system-ui,sans-serif;
+  --body:'Hanken Grotesk',ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;
+
+  --ease:cubic-bezier(.22,.61,.36,1);
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{
+  margin:0;
+  background:var(--cream);
+  color:var(--ink);
+  font-family:var(--body);
+  font-size:clamp(1rem,.6vw + .9rem,1.075rem);
+  line-height:1.7;
+  font-weight:400;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+  overflow-x:hidden;
+}
+img{display:block;max-width:100%;height:auto}
+a{color:inherit;text-decoration:none}
+button{font:inherit;cursor:pointer}
+h1,h2,h3,p{margin:0}
+::selection{background:var(--matcha);color:var(--forest-2)}
+
+/* ============ TYPE ============ */
+h1,h2,h3,.display{font-family:var(--display);font-weight:700;line-height:1.02;letter-spacing:-.02em;text-wrap:balance}
+.eyebrow{
+  font-family:var(--body);font-weight:700;font-size:.74rem;
+  letter-spacing:.22em;text-transform:uppercase;
+  display:inline-flex;align-items:center;gap:.6em;
+}
+.eyebrow::before{content:"";width:26px;height:2px;background:currentColor;opacity:.55;border-radius:2px}
+.lead{font-size:clamp(1.08rem,1.4vw,1.28rem);line-height:1.6;color:var(--ink-60)}
+.tnum{font-variant-numeric:tabular-nums}
+
+/* ============ LAYOUT ============ */
+.wrap{width:100%;max-width:var(--wrap);margin-inline:auto;padding-inline:var(--pad)}
+section{scroll-margin-top:84px}
+.section{padding-block:var(--sp-section)}
+
+/* ============ BUTTONS ============ */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:.55em;
+  padding:.95em 1.6em;border-radius:100px;font-weight:700;font-size:.98rem;
+  letter-spacing:.005em;border:1.5px solid transparent;
+  transition:transform .3s var(--ease),background .3s,color .3s,border-color .3s,box-shadow .3s;
+  will-change:transform;
+}
+.btn svg{width:1.05em;height:1.05em}
+.btn--primary{background:var(--matcha);color:var(--forest-2);box-shadow:0 10px 26px -12px rgba(143,185,75,.8)}
+.btn--primary:hover{transform:translateY(-3px);box-shadow:0 16px 34px -12px rgba(143,185,75,.95)}
+.btn--ghost{border-color:var(--cream-46);color:var(--cream)}
+.btn--ghost:hover{border-color:var(--cream);background:rgba(236,230,215,.08);transform:translateY(-3px)}
+.btn--dark{background:var(--forest);color:var(--cream)}
+.btn--dark:hover{transform:translateY(-3px);background:var(--forest-3);box-shadow:0 16px 30px -14px rgba(24,58,44,.7)}
+.btn--line{border-color:var(--line);color:var(--ink)}
+.btn--line:hover{border-color:var(--forest);transform:translateY(-3px)}
+
+:focus-visible{outline:3px solid var(--matcha);outline-offset:3px;border-radius:6px}
+
+/* ============ NAV ============ */
+.nav{position:sticky;top:0;z-index:60;transition:background .4s,box-shadow .4s,backdrop-filter .4s}
+.nav__in{display:flex;align-items:center;justify-content:space-between;gap:1rem;height:72px}
+.brand{display:flex;align-items:center;gap:.62rem;font-family:var(--display);font-weight:700;font-size:1.28rem;letter-spacing:-.02em;color:var(--cream);transition:color .4s}
+.brand img{width:38px;height:38px;border-radius:10px;box-shadow:0 0 0 1.5px rgba(236,230,215,.28)}
+.nav__links{display:flex;align-items:center;gap:2rem;list-style:none;margin:0;padding:0}
+.nav__links a{font-weight:600;font-size:.95rem;color:var(--cream-70);position:relative;padding:.3em 0;transition:color .3s}
+.nav__links a::after{content:"";position:absolute;left:0;bottom:-2px;height:2px;width:0;background:var(--matcha);transition:width .32s var(--ease)}
+.nav__links a:hover{color:var(--cream)}
+.nav__links a:hover::after{width:100%}
+.nav__ig{display:inline-flex;align-items:center;gap:.5em;color:var(--forest-2);background:var(--matcha);padding:.6em 1.1em;border-radius:100px;font-weight:700;font-size:.9rem;transition:transform .3s var(--ease)}
+.nav__ig:hover{transform:translateY(-2px)}
+.nav__ig svg{width:1.1em;height:1.1em}
+.burger{display:none;flex-direction:column;gap:5px;background:none;border:0;padding:8px}
+.burger span{width:24px;height:2px;background:var(--cream);border-radius:2px;transition:.3s}
+
+/* nav solid state (after scroll / on light) */
+.nav.solid{background:rgba(14,39,28,.9);backdrop-filter:blur(14px);box-shadow:0 1px 0 rgba(236,230,215,.09)}
+
+/* ============ HERO ============ */
+.hero{position:relative;background:var(--forest);color:var(--cream);overflow:hidden;isolation:isolate}
+.hero::before{ /* radial glow */
+  content:"";position:absolute;inset:0;z-index:-2;
+  background:
+    radial-gradient(120% 90% at 15% 0%,rgba(33,80,60,.9),transparent 60%),
+    radial-gradient(90% 80% at 100% 100%,rgba(143,185,75,.14),transparent 55%),
+    var(--forest);
+}
+.stroke-bg{position:absolute;z-index:-1;pointer-events:none}
+.hero .stroke-bg{top:-8%;right:-14%;width:min(78vw,940px);opacity:.16;color:var(--matcha)}
+.hero__grid{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(2rem,4vw,4rem);align-items:center;
+  padding-top:clamp(2.5rem,6vw,5rem);padding-bottom:clamp(3rem,7vw,6rem);min-height:calc(100svh - 72px)}
+.hero__eyebrow{color:var(--matcha)}
+.hero h1{font-size:clamp(2.9rem,7.4vw,5.6rem);font-weight:800;margin-top:1.1rem}
+.hero h1 em{font-style:normal;color:var(--matcha);display:block}
+.hero__sub{max-width:38ch;margin-top:1.4rem;color:var(--cream-70);font-size:clamp(1.05rem,1.4vw,1.24rem);line-height:1.6}
+.hero__cta{display:flex;flex-wrap:wrap;gap:.9rem;margin-top:2.1rem}
+.hero__meta{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem 1.1rem;margin-top:2.4rem;
+  font-size:.92rem;color:var(--cream-46);font-weight:600}
+.hero__meta b{color:var(--cream-70);font-weight:700}
+.hero__meta .dot{width:5px;height:5px;border-radius:50%;background:var(--matcha);opacity:.7}
+
+.hero__media{position:relative;justify-self:center}
+.hero__photo{position:relative;width:min(86vw,420px);aspect-ratio:3/3.7;border-radius:26px;overflow:hidden;
+  box-shadow:0 40px 80px -30px rgba(0,0,0,.6),0 0 0 1px rgba(236,230,215,.12);
+  transform:translateY(var(--py,0))}
+.hero__photo img{width:100%;height:100%;object-fit:cover}
+.hero__badge{position:absolute;left:-24px;bottom:38px;background:var(--cream);color:var(--ink);
+  border-radius:16px;padding:.85rem 1.1rem;box-shadow:0 20px 40px -18px rgba(0,0,0,.5);
+  display:flex;align-items:center;gap:.7rem;font-weight:700;font-size:.92rem;max-width:220px}
+.hero__badge .pill{font-family:var(--display);font-size:1.5rem;line-height:1;color:var(--matcha-deep)}
+.hero__badge small{display:block;font-weight:600;color:var(--ink-60);font-size:.76rem;letter-spacing:.02em}
+.hero__flag{position:absolute;right:-14px;top:34px;background:rgba(14,39,28,.72);backdrop-filter:blur(6px);
+  border:1px solid rgba(236,230,215,.18);border-radius:100px;padding:.5em 1em;font-size:.82rem;font-weight:700;color:var(--cream)}
+
+/* scroll cue */
+.scrollcue{position:absolute;left:50%;bottom:20px;transform:translateX(-50%);z-index:2;
+  display:flex;flex-direction:column;align-items:center;gap:.5rem;color:var(--cream-46);font-size:.72rem;
+  letter-spacing:.2em;text-transform:uppercase;font-weight:700}
+.scrollcue .mouse{width:22px;height:34px;border:2px solid var(--cream-46);border-radius:14px;position:relative}
+.scrollcue .mouse::after{content:"";position:absolute;left:50%;top:7px;width:3px;height:6px;background:var(--matcha);
+  border-radius:2px;transform:translateX(-50%);animation:wheel 1.6s var(--ease) infinite}
+@keyframes wheel{0%{opacity:0;top:6px}30%{opacity:1}70%{opacity:1}100%{opacity:0;top:16px}}
+
+/* ============ SECTION HEADS ============ */
+.head{display:flex;flex-direction:column;gap:1rem;max-width:62ch}
+.head.center{align-items:center;text-align:center;margin-inline:auto}
+.head h2{font-size:clamp(2rem,4.4vw,3.4rem)}
+.head .eyebrow{color:var(--matcha-deep)}
+
+/* ============ ABOUT ============ */
+.about{background:var(--cream);overflow:hidden}
+.about__grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(2rem,5vw,4.5rem);align-items:center}
+.about__copy p+p{margin-top:1rem}
+.props{display:grid;gap:.4rem;margin-top:2rem}
+.prop{display:flex;gap:1rem;align-items:flex-start;padding:1.1rem 0;border-top:1px solid var(--line)}
+.prop:last-child{border-bottom:1px solid var(--line)}
+.prop .ic{flex:none;width:44px;height:44px;border-radius:12px;background:var(--forest);color:var(--matcha);
+  display:grid;place-items:center}
+.prop .ic svg{width:22px;height:22px}
+.prop h3{font-family:var(--display);font-size:1.12rem;font-weight:700;letter-spacing:-.01em}
+.prop p{font-size:.96rem;color:var(--ink-60);margin-top:.15rem}
+.about__media{position:relative}
+.about__media img{border-radius:var(--r);width:100%;box-shadow:0 30px 60px -34px rgba(24,58,44,.6)}
+.about__media .tag{position:absolute;left:20px;bottom:20px;background:var(--oxblood);color:var(--cream);
+  padding:.6em 1em;border-radius:100px;font-size:.82rem;font-weight:700}
+.about__media .stroke-bg{bottom:-10%;right:-12%;width:60%;opacity:.5;color:var(--matcha-deep);z-index:-1}
+
+/* ============ RITUAL ============ */
+.ritual{background:var(--forest);color:var(--cream);position:relative;overflow:hidden}
+.ritual .stroke-bg{top:-20%;left:-10%;width:min(70vw,760px);opacity:.1;color:var(--matcha)}
+.ritual .head .eyebrow{color:var(--matcha)}
+.ritual .head h2{color:var(--cream)}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(1.2rem,3vw,2.4rem);margin-top:3rem}
+.step{position:relative;padding-top:1.4rem;border-top:2px solid rgba(236,230,215,.16)}
+.step__n{font-family:var(--display);font-weight:800;font-size:1rem;color:var(--matcha);letter-spacing:.05em}
+.step h3{font-size:1.5rem;color:var(--cream);margin-top:.7rem}
+.step p{color:var(--cream-70);margin-top:.6rem;font-size:.98rem}
+
+/* ============ MENU ============ */
+.menu{background:var(--paper)}
+.menu__grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(1rem,2vw,1.5rem);margin-top:3rem}
+.mcard{background:var(--cream-2);border:1px solid var(--line);border-radius:var(--r);
+  padding:clamp(1.4rem,2.4vw,2rem);display:flex;flex-direction:column;gap:.9rem;
+  transition:transform .4s var(--ease),box-shadow .4s,border-color .4s}
+.mcard:hover{transform:translateY(-6px);box-shadow:0 26px 50px -30px rgba(24,58,44,.5);border-color:transparent}
+.mcard__top{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem}
+.mcard h3{font-size:1.55rem;letter-spacing:-.02em}
+.mcard .ml{font-size:.78rem;font-weight:700;color:var(--ink-42);letter-spacing:.08em;text-transform:uppercase;margin-top:.35rem}
+.mcard .price{font-family:var(--display);font-weight:800;font-size:1.7rem;color:var(--forest);white-space:nowrap;line-height:1}
+.mcard .price sup{font-size:.62em;font-weight:700;margin-left:.15em;top:-.2em}
+.mcard .formula{font-size:.9rem;color:var(--matcha-deep);font-weight:600}
+.mcard .desc{font-size:.98rem;color:var(--ink-60)}
+.chips{display:flex;flex-wrap:wrap;gap:.45rem;margin-top:.2rem}
+.chip{font-size:.8rem;font-weight:600;color:var(--forest);background:rgba(94,138,52,.12);
+  border:1px solid rgba(94,138,52,.22);border-radius:100px;padding:.32em .8em}
+.menu__note{margin-top:2rem;text-align:center;color:var(--ink-60);font-size:.98rem}
+.menu__note b{color:var(--forest)}
+
+/* ============ INSTAGRAM ============ */
+.ig{background:var(--cream)}
+.ig__grid{display:grid;grid-template-columns:repeat(6,1fr);gap:clamp(.5rem,1vw,.85rem);margin-top:2.6rem}
+.ig__tile{position:relative;aspect-ratio:1;border-radius:14px;overflow:hidden;display:block;background:var(--forest)}
+.ig__tile img{width:100%;height:100%;object-fit:cover;transition:transform .6s var(--ease),filter .4s}
+.ig__tile::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(14,39,28,.5),transparent 55%);
+  opacity:0;transition:opacity .4s}
+.ig__tile:hover img{transform:scale(1.07)}
+.ig__tile:hover::after{opacity:1}
+.ig__tile .glyph{position:absolute;right:10px;bottom:10px;color:#fff;opacity:0;transform:translateY(6px);transition:.4s}
+.ig__tile:hover .glyph{opacity:1;transform:none}
+.ig__tile .glyph svg{width:20px;height:20px}
+.ig__foot{display:flex;justify-content:center;margin-top:2.4rem}
+
+/* ============ VISIT ============ */
+.visit{background:var(--forest-2);color:var(--cream);position:relative;overflow:hidden}
+.visit .head .eyebrow{color:var(--matcha)}
+.visit .head h2{color:var(--cream)}
+.visit__grid{display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(2rem,4vw,3.5rem);margin-top:3rem;align-items:start}
+.info{display:grid;gap:1.1rem}
+.info__row{display:flex;gap:1rem;align-items:flex-start;padding:1.2rem 0;border-bottom:1px solid rgba(236,230,215,.12)}
+.info__row .ic{flex:none;width:42px;height:42px;border-radius:11px;background:rgba(143,185,75,.14);color:var(--matcha);display:grid;place-items:center}
+.info__row .ic svg{width:20px;height:20px}
+.info__row h3{font-family:var(--body);font-weight:700;font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;color:var(--cream-46)}
+.info__row p{color:var(--cream);font-size:1.08rem;margin-top:.25rem;line-height:1.45}
+.info__row a p:hover,.info__row a:hover p{color:var(--matcha)}
+.hours{display:flex;gap:2.2rem}
+.hours .tnum{color:var(--cream)}
+.freecard{margin-top:1.6rem;background:linear-gradient(135deg,var(--matcha),var(--matcha-deep));color:var(--forest-2);
+  border-radius:var(--r);padding:1.5rem 1.6rem;display:flex;gap:1rem;align-items:center}
+.freecard .big{font-family:var(--display);font-weight:800;font-size:1.15rem;line-height:1.1}
+.freecard p{font-size:.92rem;font-weight:600;margin-top:.2rem}
+.freecard .gift{flex:none;width:52px;height:52px;border-radius:14px;background:rgba(14,39,28,.16);display:grid;place-items:center}
+.freecard .gift svg{width:26px;height:26px;color:var(--forest-2)}
+
+/* map card */
+.mapcard{border-radius:var(--r);overflow:hidden;position:relative;background:var(--forest-3);min-height:340px;
+  border:1px solid rgba(236,230,215,.14);display:flex;flex-direction:column;justify-content:flex-end}
+.mapcard .grid-lines{position:absolute;inset:0;opacity:.5}
+.mapcard__pin{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:.4rem}
+.mapcard__pin .dot{width:18px;height:18px;background:var(--matcha);border-radius:50%;box-shadow:0 0 0 6px rgba(143,185,75,.25),0 0 0 14px rgba(143,185,75,.12);animation:ping 2.4s ease-out infinite}
+@keyframes ping{0%{box-shadow:0 0 0 4px rgba(143,185,75,.4),0 0 0 4px rgba(143,185,75,.2)}100%{box-shadow:0 0 0 16px rgba(143,185,75,0),0 0 0 30px rgba(143,185,75,0)}}
+.mapcard__pin span{font-weight:700;font-size:.82rem;background:var(--cream);color:var(--ink);padding:.3em .7em;border-radius:100px}
+.mapcard__bar{position:relative;background:rgba(14,39,28,.78);backdrop-filter:blur(6px);padding:1.1rem 1.3rem;display:flex;justify-content:space-between;align-items:center;gap:1rem}
+.mapcard__bar b{font-size:1rem}
+.mapcard__bar small{display:block;color:var(--cream-46);font-size:.82rem;font-weight:600}
+
+/* ============ FOOTER ============ */
+.footer{background:var(--oxblood);color:var(--cream)}
+.footer__in{display:flex;flex-wrap:wrap;justify-content:space-between;gap:2rem;padding-block:clamp(3rem,6vw,4.5rem)}
+.footer .brand{color:var(--cream)}
+.footer__col h4{font-family:var(--body);font-weight:700;font-size:.76rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(236,230,215,.5);margin:0 0 .9rem}
+.footer__col p,.footer__col a{color:var(--cream-70);font-size:.96rem;line-height:1.9;display:block}
+.footer__col a:hover{color:var(--matcha)}
+.footer__brandcol{max-width:280px}
+.footer__brandcol p{color:var(--cream-46);font-size:.92rem;margin-top:1rem;line-height:1.6}
+.footer__bottom{border-top:1px solid rgba(236,230,215,.14);padding-block:1.5rem;display:flex;flex-wrap:wrap;justify-content:space-between;gap:.6rem;font-size:.82rem;color:var(--cream-46)}
+
+/* ============ REVEAL ============ */
+.reveal{transition:opacity .8s var(--ease),transform .8s var(--ease)}
+.js .reveal{opacity:0;transform:translateY(28px)}
+.js .reveal.in{opacity:1;transform:none}
+.reveal[data-d="1"]{transition-delay:.08s}
+.reveal[data-d="2"]{transition-delay:.16s}
+.reveal[data-d="3"]{transition-delay:.24s}
+.reveal[data-d="4"]{transition-delay:.32s}
+.reveal[data-d="5"]{transition-delay:.4s}
+
+/* draw-in stroke */
+.draw path{stroke-dasharray:var(--len,1200);transition:stroke-dashoffset 1.8s var(--ease)}
+.js .draw path{stroke-dashoffset:var(--len,1200)}
+.js .draw.in path{stroke-dashoffset:0}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width:900px){
+  .hero__grid{grid-template-columns:1fr;text-align:center;gap:2.5rem;min-height:auto}
+  .hero__eyebrow,.hero .eyebrow{justify-content:center}
+  .hero__sub{margin-inline:auto}
+  .hero__cta,.hero__meta{justify-content:center}
+  .about__grid{grid-template-columns:1fr}
+  .about__media{order:-1}
+  .visit__grid{grid-template-columns:1fr}
+  .steps{grid-template-columns:1fr;gap:0}
+  .step{padding-block:1.4rem}
+  .ig__grid{grid-template-columns:repeat(3,1fr)}
+}
+@media (max-width:640px){
+  .nav__links{display:none}
+  .nav .nav__ig{display:none}
+  .burger{display:flex}
+  .menu__grid{grid-template-columns:1fr}
+  .hours{gap:1.4rem}
+  .footer__in{flex-direction:column;gap:2.2rem}
+  .mobile-open .nav__links{
+    display:flex;position:absolute;top:72px;left:0;right:0;flex-direction:column;gap:0;
+    background:rgba(14,39,28,.98);backdrop-filter:blur(14px);padding:.5rem var(--pad) 1.4rem;
+  }
+  .mobile-open .nav__links li{border-bottom:1px solid rgba(236,230,215,.1)}
+  .mobile-open .nav__links a{display:block;padding:1rem 0;font-size:1.05rem;color:var(--cream)}
+  .mobile-open .nav__ig{display:inline-flex;margin-top:1rem;align-self:flex-start}
+  .mobile-open .nav__links{align-items:stretch}
+}
+
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+  .reveal{opacity:1;transform:none}
+  .draw path{stroke-dashoffset:0}
+  .hero__photo{transform:none!important}
+}
+</style>
+
+<div class="tm">
+  <!-- ============ NAV ============ -->
+  <header class="nav" id="nav">
+    <div class="wrap nav__in">
+      <a href="#top" class="brand" aria-label="Tamatcha — domů">
+        <img src="{{LOGO}}" alt="" width="38" height="38">
+        <span>tamatcha</span>
+      </a>
+      <nav aria-label="Hlavní navigace">
+        <ul class="nav__links">
+          <li><a href="#o-nas">O nás</a></li>
+          <li><a href="#menu">Menu</a></li>
+          <li><a href="#galerie">Galerie</a></li>
+          <li><a href="#navstiv">Kde nás najdeš</a></li>
+          <li class="nav__ig-li"><a class="nav__ig" href="https://www.instagram.com/tamatcha_ova/" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg>
+            Instagram</a></li>
+        </ul>
+      </nav>
+      <button class="burger" id="burger" aria-label="Otevřít menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main id="top">
+    <!-- ============ HERO ============ -->
+    <section class="hero">
+      <svg class="stroke-bg draw" viewBox="0 0 600 600" fill="none" aria-hidden="true">
+        <path d="M60 540 C 180 340 260 220 520 90" stroke="currentColor" stroke-width="10" stroke-linecap="round" style="--len:760"/>
+        <path d="M120 560 C 240 380 330 250 560 150" stroke="currentColor" stroke-width="10" stroke-linecap="round" style="--len:760"/>
+        <path d="M20 500 C 150 300 230 200 470 60" stroke="currentColor" stroke-width="10" stroke-linecap="round" style="--len:760"/>
+      </svg>
+      <div class="wrap hero__grid">
+        <div class="hero__text">
+          <span class="eyebrow hero__eyebrow reveal">První matcha bar v Ostravě</span>
+          <h1 class="reveal" data-d="1">Prémiová matcha<em>čerstvě našleháno.</em></h1>
+          <p class="hero__sub reveal" data-d="2">Ceremoniální matcha nejvyšší kvality z japonské prefektury Kagošima — v ledovém fizzu, nadýchaném cloudu i sametovém latté. Ochutnej ji tam, kde vznikla první ostravská matcha kultura.</p>
+          <div class="hero__cta reveal" data-d="3">
+            <a href="#menu" class="btn btn--primary">Prohlédnout menu
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+            <a href="#navstiv" class="btn btn--ghost">Kde nás najdeš</a>
+          </div>
+          <div class="hero__meta reveal" data-d="4">
+            <span><b>Po–Pá</b> 7–18</span><span class="dot"></span>
+            <span><b>So–Ne</b> 9–18</span><span class="dot"></span>
+            <span>Na Hradbách 1481/6, Ostrava</span>
+          </div>
+        </div>
+        <div class="hero__media reveal" data-d="3">
+          <div class="hero__photo" id="heroPhoto">
+            <img src="{{HERO_FIZZ}}" alt="Maracuja Matcha Fizz — ledový nápoj s ovocným pyré před stěnou z rostlin" width="420" height="516">
+          </div>
+          <div class="hero__flag">🇯🇵 Kagošima</div>
+          <div class="hero__badge">
+            <span class="pill tnum">119<small>Kč / 450 ml</small></span>
+            <span>Signature<br>Matcha Fizz</span>
+          </div>
+        </div>
+      </div>
+      <a href="#o-nas" class="scrollcue" aria-hidden="true"><span class="mouse"></span>scroll</a>
+    </section>
+
+    <!-- ============ ABOUT ============ -->
+    <section class="section about" id="o-nas">
+      <div class="wrap about__grid">
+        <div class="about__copy">
+          <div class="head">
+            <span class="eyebrow reveal">O nás</span>
+            <h2 class="reveal" data-d="1">Z Kagošimy<br>rovnou do Ostravy.</h2>
+          </div>
+          <div class="reveal" data-d="2" style="margin-top:1.4rem">
+            <p class="lead">Otevřeli jsme první matcha bar ve městě — kousek od Kuřího rynku, hned vedle OC Laso. Vozíme ceremoniální matchu té nejvyšší kvality přímo z japonské prefektury Kagošima a připravujeme z ní nápoje, které mají grády i chuť.</p>
+            <p style="margin-top:1rem">Žádný prášek z regálu. Jen sytě zelená, jemně nahořklá matcha, ovocná pyré a spousta ledu — přesně tak, jak ji máš rád.</p>
+          </div>
+          <div class="props reveal" data-d="3">
+            <div class="prop">
+              <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3l2.5 5.5L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-.5z" stroke-linejoin="round"/></svg></span>
+              <div><h3>Prémiová kvalita</h3><p>Matcha nejvyšší jakosti přímo z prefektury Kagošima.</p></div>
+            </div>
+            <div class="prop">
+              <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M13 2L4 14h6l-1 8 9-12h-6z" stroke-linejoin="round"/></svg></span>
+              <div><h3>Energie bez propadu</h3><p>Přirozený kofein, který tě nabudí a nenechá spadnout.</p></div>
+            </div>
+            <div class="prop">
+              <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 3v4M18 3v4M4 8h16M6 8c0 6 2 9 6 9s6-3 6-9" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 21h6" stroke-linecap="round"/></svg></span>
+              <div><h3>Čerstvě připravená</h3><p>Každý drink šleháme na počkání, jen pro tebe.</p></div>
+            </div>
+          </div>
+        </div>
+        <div class="about__media reveal" data-d="2">
+          <svg class="stroke-bg draw" viewBox="0 0 400 400" fill="none" aria-hidden="true">
+            <path d="M40 360 C 140 240 200 160 380 60" stroke="currentColor" stroke-width="14" stroke-linecap="round" style="--len:560"/>
+            <path d="M90 380 C 190 270 250 190 400 110" stroke="currentColor" stroke-width="14" stroke-linecap="round" style="--len:560"/>
+          </svg>
+          <img src="{{ABOUT_INTERIOR}}" alt="Interiér matcha baru Tamatcha — barista podává ledovou matchu přes barový pult" width="420" height="560">
+          <span class="tag">📍 Ostrava-Centrum</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ RITUAL ============ -->
+    <section class="section ritual">
+      <svg class="stroke-bg draw" viewBox="0 0 600 600" fill="none" aria-hidden="true">
+        <path d="M40 520 C 200 360 280 240 560 120" stroke="currentColor" stroke-width="12" stroke-linecap="round" style="--len:760"/>
+        <path d="M20 460 C 180 320 260 220 520 80" stroke="currentColor" stroke-width="12" stroke-linecap="round" style="--len:760"/>
+      </svg>
+      <div class="wrap">
+        <div class="head reveal">
+          <span class="eyebrow">Připraveno obřadně</span>
+          <h2>Tři kroky k dokonalé matche</h2>
+        </div>
+        <div class="steps">
+          <div class="step reveal" data-d="1"><span class="step__n">Krok 01</span><h3>Prosíváme</h3><p>Ceremoniální matchu nejdřív prosejeme přes jemné sítko, aby v ní nezůstala jediná hrudka.</p></div>
+          <div class="step reveal" data-d="2"><span class="step__n">Krok 02</span><h3>Šleháme</h3><p>Bambusovým chasenem ji našleháme s vodou o správné teplotě do sametově hladké pěny.</p></div>
+          <div class="step reveal" data-d="3"><span class="step__n">Krok 03</span><h3>Podáváme</h3><p>Ledově, nadýchaně nebo v latté — dolijeme, ozdobíme a podáme přesně podle tebe.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ MENU ============ -->
+    <section class="section menu" id="menu">
+      <div class="wrap">
+        <div class="head center reveal">
+          <span class="eyebrow">Menu</span>
+          <h2>Naše signature nápoje</h2>
+          <p class="lead">Každý drink si sestavíš podle sebe — vyber si příchuť pyré a sirupu. Vše 450 ml.</p>
+        </div>
+        <div class="menu__grid">
+          <article class="mcard reveal" data-d="1">
+            <div class="mcard__top">
+              <div><h3>Matcha Fizz</h3><div class="ml">450 ml</div></div>
+              <div class="price tnum">119<sup>Kč</sup></div>
+            </div>
+            <p class="formula">matcha · tonic · pyré dle výběru</p>
+            <p class="desc">Osvěžující bublinky, ledová matcha a ovocné pyré. Náš hit do horkých dnů.</p>
+            <div class="chips"><span class="chip">Maracuja</span><span class="chip">Yuzu</span><span class="chip">Cherry</span><span class="chip">Grep</span><span class="chip">Mango</span><span class="chip">Jahoda</span></div>
+          </article>
+          <article class="mcard reveal" data-d="2">
+            <div class="mcard__top">
+              <div><h3>Matcha Cloud</h3><div class="ml">450 ml</div></div>
+              <div class="price tnum">119<sup>Kč</sup></div>
+            </div>
+            <p class="formula">matcha cloud · kokosová voda · pyré · posyp</p>
+            <p class="desc">Nadýchaná matcha pěna na kokosové vodě. Lehké a osvěžující jako obláček.</p>
+            <div class="chips"><span class="chip">Jahoda</span><span class="chip">Borůvka</span><span class="chip">Bez pyré</span></div>
+          </article>
+          <article class="mcard reveal" data-d="1">
+            <div class="mcard__top">
+              <div><h3>Iced / Hot Matcha Latté</h3><div class="ml">450 ml</div></div>
+              <div class="price tnum">119<sup>Kč</sup></div>
+            </div>
+            <p class="formula">matcha · ovesné / mandlové mléko · sirup · posyp</p>
+            <p class="desc">Sametová matcha s rostlinným mlékem a sirupem. Ledové i teplé.</p>
+            <div class="chips"><span class="chip">Vanilka</span><span class="chip">Čokoláda</span><span class="chip">Jahoda</span><span class="chip">Lískooříšek</span><span class="chip">Karamel</span><span class="chip">Kokos</span></div>
+          </article>
+          <article class="mcard reveal" data-d="2">
+            <div class="mcard__top">
+              <div><h3>Iced Yerba Maté</h3><div class="ml">450 ml</div></div>
+              <div class="price tnum">79<sup>Kč</sup></div>
+            </div>
+            <p class="formula">yerba maté · pyré dle výběru</p>
+            <p class="desc">Přirozená energie z jihoamerické yerby s ovocným pyré a ledem.</p>
+            <div class="chips"><span class="chip">Ananas</span><span class="chip">Černý rybíz</span><span class="chip">Broskev</span><span class="chip">Bez pyré</span></div>
+          </article>
+        </div>
+        <p class="menu__note reveal">Brzy přidáváme <b>speciální drinky</b> — ať ti neutečou, sleduj nás na Instagramu.</p>
+      </div>
+    </section>
+
+    <!-- ============ INSTAGRAM ============ -->
+    <section class="section ig" id="galerie">
+      <div class="wrap">
+        <div class="head center reveal">
+          <span class="eyebrow">@tamatcha_ova</span>
+          <h2>Naživo z baru</h2>
+          <p class="lead">Nejnovější drinky, akce a zákulisí — všechno najdeš na našem Instagramu.</p>
+        </div>
+        <div class="ig__grid">
+          <a class="ig__tile reveal" href="https://www.instagram.com/tamatcha_ova/" target="_blank" rel="noopener" aria-label="Maracuja Matcha Fizz na Instagramu"><img src="{{IG_FIZZ}}" alt="Maracuja Matcha Fizz" loading="lazy"><span class="glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg></span></a>
+          <a class="ig__tile reveal" data-d="1" href="https://www.instagram.com/tamatcha_ova/" target="_blank" rel="noopener" aria-label="Interiér baru na Instagramu"><img src="{{IG_INTERIOR}}" alt="Interiér matcha baru" loading="lazy"><span class="glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg></span></a>
+          <a class="ig__tile reveal" data-d="2" href="https://www.instagram.com/tamatcha_ova/" target="_blank" rel="noopener" aria-label="Grand Opening na Instagramu"><img src="{{IG_OPENING}}" alt="Grand Opening — tři signature drinky" loading="lazy"><span class="glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg></span></a>
+          <a class="ig__tile reveal" data-d="3" href="https://www.instagram.com/tamatcha_ova/" target="_blank" rel="noopener" aria-label="Vyprošťovák na festival na Instagramu"><img src="{{IG_FESTIVAL}}" alt="Festivalový vyprošťovák" loading="lazy"><span class="glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg></span></a>
+          <a class="ig__tile reveal" data-d="4" href="https://www.instagram.com/tamatcha_ova/" target="_blank" rel="noopener" aria-label="Ledové matcha latté na Instagramu"><img src="{{IG_LATTE}}" alt="Ledové matcha latté" loading="lazy"><span class="glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg></span></a>
+          <a class="ig__tile reveal" data-d="5" href="https://www.instagram.com/tamatcha_ova/" target="_blank" rel="noopener" aria-label="Kompletní nápojové menu na Instagramu"><img src="{{IG_MENU}}" alt="Nápojové menu Tamatcha" loading="lazy"><span class="glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg></span></a>
+        </div>
+        <div class="ig__foot reveal">
+          <a class="btn btn--dark" href="https://www.instagram.com/tamatcha_ova/" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg>
+            Sledovat @tamatcha_ova</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ VISIT ============ -->
+    <section class="section visit" id="navstiv">
+      <div class="wrap">
+        <div class="head reveal">
+          <span class="eyebrow">Kde nás najdeš</span>
+          <h2>Zastav se na matchu.</h2>
+        </div>
+        <div class="visit__grid">
+          <div>
+            <div class="info reveal" data-d="1">
+              <div class="info__row">
+                <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 21s7-6.2 7-11a7 7 0 10-14 0c0 4.8 7 11 7 11z" stroke-linejoin="round"/><circle cx="12" cy="10" r="2.5"/></svg></span>
+                <div><h3>Adresa</h3><p>Na Hradbách 1481/6, 702 00 Ostrava-Centrum<br><span style="color:var(--cream-46);font-size:.92rem">u Kuřího rynku · vedle OC Laso</span></p></div>
+              </div>
+              <div class="info__row">
+                <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                <div><h3>Otevírací doba</h3>
+                  <div class="hours"><p>Po–Pá<br><b class="tnum">7:00–18:00</b></p><p>So–Ne<br><b class="tnum">9:00–18:00</b></p></div>
+                </div>
+              </div>
+              <a class="info__row" href="tel:+420605000456">
+                <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 5c0 8 7 15 15 15l0-3.5-4-1.5-2 2c-2.5-1.2-4.8-3.5-6-6l2-2L11 5H4z" stroke-linejoin="round"/></svg></span>
+                <div><h3>Telefon</h3><p class="tnum">+420 605 000 456</p></div>
+              </a>
+            </div>
+            <div class="freecard reveal" data-d="2">
+              <span class="gift"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 12v9H4v-9M2 7h20v5H2zM12 22V7M12 7S9 3 6.5 4 8 8 12 7zM12 7s3-4 5.5-3S16 8 12 7z" stroke-linejoin="round"/></svg></span>
+              <div><div class="big">Drink zdarma?</div><p>Nasdílej svůj drink na Instagram a označ <b>@tamatcha_ova</b> — a máš ho od nás na účet.</p></div>
+            </div>
+          </div>
+          <a class="mapcard reveal" data-d="2" href="https://www.google.com/maps/search/?api=1&query=Tamatcha+Na+Hradb%C3%A1ch+1481%2F6+Ostrava" target="_blank" rel="noopener" aria-label="Otevřít Tamatcha v Mapách Google">
+            <svg class="grid-lines" viewBox="0 0 400 340" fill="none" aria-hidden="true" preserveAspectRatio="xMidYMid slice">
+              <g stroke="rgba(236,230,215,.14)" stroke-width="2">
+                <path d="M-20 90 H420"/><path d="M-20 190 H420"/><path d="M-20 270 H420"/>
+                <path d="M80 -20 V360"/><path d="M200 -20 V360"/><path d="M310 -20 V360"/>
+                <path d="M-20 40 L200 190 L420 60" stroke="rgba(143,185,75,.28)" stroke-width="3"/>
+              </g>
+            </svg>
+            <div class="mapcard__pin"><span class="dot"></span><span>Tamatcha</span></div>
+            <div class="mapcard__bar">
+              <div><b>Otevřít v mapách</b><small>Na Hradbách 1481/6, Ostrava</small></div>
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--matcha)" stroke-width="2.4" width="22" height="22" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="footer">
+    <div class="wrap footer__in">
+      <div class="footer__col footer__brandcol">
+        <a href="#top" class="brand"><img src="{{LOGO}}" alt="" width="38" height="38"><span>tamatcha</span></a>
+        <p>První matcha bar v Ostravě. Prémiová matcha nejvyšší kvality z prefektury Kagošima — čerstvě našleháno pro tebe.</p>
+      </div>
+      <div class="footer__col">
+        <h4>Navigace</h4>
+        <a href="#o-nas">O nás</a>
+        <a href="#menu">Menu</a>
+        <a href="#galerie">Galerie</a>
+        <a href="#navstiv">Kde nás najdeš</a>
+      </div>
+      <div class="footer__col">
+        <h4>Kontakt</h4>
+        <a href="https://www.google.com/maps/search/?api=1&query=Tamatcha+Na+Hradb%C3%A1ch+1481%2F6+Ostrava" target="_blank" rel="noopener">Na Hradbách 1481/6<br>702 00 Ostrava-Centrum</a>
+        <a href="tel:+420605000456" class="tnum">+420 605 000 456</a>
+        <a href="https://www.instagram.com/tamatcha_ova/" target="_blank" rel="noopener">@tamatcha_ova</a>
+      </div>
+      <div class="footer__col">
+        <h4>Otevřeno</h4>
+        <p class="tnum">Po–Pá&nbsp;&nbsp;7:00–18:00</p>
+        <p class="tnum">So–Ne&nbsp;&nbsp;9:00–18:00</p>
+      </div>
+    </div>
+    <div class="wrap footer__bottom">
+      <span>© 2026 Tamatcha · Ostrava</span>
+      <span>Matcha, poctivě. 🍵</span>
+    </div>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var rm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* progressive enhancement: only hide reveals once JS is confirmed running */
+  document.documentElement.classList.add('js');
+
+  /* reveal on scroll */
+  var els = document.querySelectorAll('.reveal, .draw');
+  if('IntersectionObserver' in window && !rm){
+    var io = new IntersectionObserver(function(ents){
+      ents.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+    },{threshold:.12, rootMargin:'0px 0px -8% 0px'});
+    els.forEach(function(el){ io.observe(el); });
+  } else {
+    els.forEach(function(el){ el.classList.add('in'); });
+  }
+
+  /* nav solid on scroll */
+  var nav = document.getElementById('nav');
+  function onScroll(){
+    if(window.scrollY > 40) nav.classList.add('solid'); else nav.classList.remove('solid');
+    if(!rm){
+      var hp = document.getElementById('heroPhoto');
+      if(hp){ var y = Math.min(window.scrollY, 700); hp.style.setProperty('--py', (y*0.08)+'px'); }
+    }
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  /* mobile menu */
+  var burger = document.getElementById('burger');
+  var tm = document.querySelector('.tm');
+  burger.addEventListener('click', function(){
+    var open = tm.classList.toggle('mobile-open');
+    nav.classList.toggle('solid', open || window.scrollY>40);
+    burger.setAttribute('aria-expanded', open ? 'true':'false');
+  });
+  document.querySelectorAll('.nav__links a').forEach(function(a){
+    a.addEventListener('click', function(){ tm.classList.remove('mobile-open'); burger.setAttribute('aria-expanded','false'); });
+  });
+})();
+</script>
