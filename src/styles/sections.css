@@ -1,5 +1,7 @@
 /* ============ NAV ============ */
-.nav{position:sticky;top:0;z-index:60;transition:background .4s,box-shadow .4s,backdrop-filter .4s}
+.nav{position:fixed;top:0;left:0;right:0;z-index:60;background:linear-gradient(180deg,rgba(14,39,28,.82),rgba(14,39,28,.5) 58%,rgba(14,39,28,0));transition:background .4s,box-shadow .4s,backdrop-filter .4s}
+/* fixed nav overlays content: offset native (no-JS) anchor jumps so section tops aren't hidden */
+main section[id]{scroll-margin-top:5rem}
 .nav__in{display:flex;align-items:center;justify-content:space-between;gap:1rem;height:72px}
 .brand{display:flex;align-items:center;gap:.62rem;font-family:var(--display);font-weight:700;font-size:1.28rem;letter-spacing:-.02em;color:var(--cream);transition:color .4s}
 .brand img{width:38px;height:38px;border-radius:10px;box-shadow:0 0 0 1.5px rgba(236,230,215,.28)}

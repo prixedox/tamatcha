@@ -21,6 +21,18 @@ test.describe('mobile nav toggle', () => {
   })
 })
 
+test('nav is legible at top of page — has a backing over the hero (not fully transparent)', async ({ page }) => {
+  // Regression: the sticky nav used to sit over the cream body above the hero,
+  // rendering cream links on cream (invisible). The fixed nav now overlays the
+  // dark hero with a scrim gradient, so at scrollY 0 it must have a backing.
+  await page.goto('./?tier=c')
+  const { image, color } = await page.locator('#nav').evaluate((el) => {
+    const cs = getComputedStyle(el)
+    return { image: cs.backgroundImage, color: cs.backgroundColor }
+  })
+  expect(image !== 'none' || color !== 'rgba(0, 0, 0, 0)').toBe(true)
+})
+
 test.describe('no JavaScript', () => {
   test.use({ javaScriptEnabled: false })
 
