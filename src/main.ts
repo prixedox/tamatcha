@@ -16,5 +16,7 @@ async function boot() {
   initHero(tier)
   const { initRitual } = await import('./scenes/ritual')
   initRitual(reduced)
+  const { initGallery } = await import('./scenes/gallery')
+  initGallery(reduced)
 }
 boot()
