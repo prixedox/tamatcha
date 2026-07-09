@@ -16,6 +16,12 @@
 
 /* nav scrolled state (after scroll / on light) */
 .nav--scrolled{background:rgba(14,39,28,.9);backdrop-filter:blur(14px);box-shadow:0 1px 0 rgba(236,230,215,.09)}
+/* no-JS and reduced-motion: the scrolled tint above only ever gets applied by
+   the ScrollTrigger in scroll.ts, which never runs in either case — so the
+   sticky nav would otherwise stay fully transparent (cream text on cream
+   sections). Give it the same tint unconditionally here. */
+html:not(.js) .nav{background:rgba(14,39,28,.9);backdrop-filter:blur(14px)}
+@media (prefers-reduced-motion: reduce){.nav{background:rgba(14,39,28,.9);backdrop-filter:blur(14px)}}
 
 /* ============ HERO: text / cta / meta / scrollcue ============ */
 /* (hero__photo/hero__flag/hero__badge dropped — v2 has no hero photo card;
@@ -51,7 +57,7 @@
 .prop .ic svg{width:22px;height:22px}
 .prop h3{font-family:var(--display);font-size:1.12rem;font-weight:700;letter-spacing:-.01em}
 .prop p{font-size:.96rem;color:var(--ink-60);margin-top:.15rem}
-.about__media{position:relative}
+.about__media{position:relative;isolation:isolate}
 .about__media img{border-radius:var(--r);width:100%;box-shadow:0 30px 60px -34px rgba(24,58,44,.6)}
 .about__media .tag{position:absolute;left:20px;bottom:20px;background:var(--oxblood);color:var(--cream);
   padding:.6em 1em;border-radius:100px;font-size:.82rem;font-weight:700}

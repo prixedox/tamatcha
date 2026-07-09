@@ -64,6 +64,12 @@ export function startNoise(hero: HTMLElement, canvas: HTMLCanvasElement): () => 
   }
   hero.addEventListener('pointermove', onMove)
 
+  // pause the shader loop when the hero scrolls off-screen — mirrors the
+  // Tier-A IntersectionObserver gate in hero.ts, which this tier lacked.
+  let visible = true
+  const io = new IntersectionObserver((ents) => { visible = ents[0].isIntersecting })
+  io.observe(hero)
+
   let running = true
   let raf = 0
   const resize = () => {
@@ -78,6 +84,7 @@ export function startNoise(hero: HTMLElement, canvas: HTMLCanvasElement): () => 
   const t0 = performance.now()
   const loop = (now: number) => {
     if (!running) return
+    if (!visible) { raf = requestAnimationFrame(loop); return }
     px += (tx - px) * 0.06; py += (ty - py) * 0.06
     gl.uniform1f(uTime, (now - t0) / 1000)
     gl.uniform2f(uPointer, px, py)
@@ -91,6 +98,7 @@ export function startNoise(hero: HTMLElement, canvas: HTMLCanvasElement): () => 
   return () => {
     running = false
     cancelAnimationFrame(raf)
+    io.disconnect()
     hero.removeEventListener('pointermove', onMove)
     window.removeEventListener('resize', resize)
     gl.getExtension('WEBGL_lose_context')?.loseContext()
