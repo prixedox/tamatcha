@@ -193,8 +193,10 @@
 .ritual--live .ritual__canvas{position:absolute;inset:0;width:100%;height:100%}
 .ritual--live .step__art{display:none}
 .ritual--live .steps{margin-top:1.2rem}
-.ritual--live .step{opacity:.35;transition:opacity .3s var(--ease)}
-.ritual--live .step.active{opacity:1}
+/* .reveal repeated to out-specificity ".js .reveal.in{opacity:1}" (base.css),
+   which otherwise ties/beats this and defeats the inactive-chapter dimming */
+.ritual--live .step.reveal{opacity:.35;transition:opacity .3s var(--ease)}
+.ritual--live .step.reveal.active{opacity:1}
 
 /* ===== gallery: strip with JS, grid without ===== */
 .js .ig__strip{display:flex;gap:1rem;overflow-x:auto;scroll-snap-type:x proximity;padding-bottom:1rem;cursor:grab;-webkit-overflow-scrolling:touch}
