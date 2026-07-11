@@ -14,6 +14,7 @@
 <script type="module">
 import * as THREE from 'three'
 import { RGBELoader } from 'three/addons/loaders/RGBELoader.js'
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js'
 
 const W = 900, H = 1180
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true })
@@ -36,7 +37,7 @@ const group = new THREE.Group(); scene.add(group)
 const smooth = (a, b, x) => { const t = Math.min(Math.max((x - a) / (b - a), 0), 1); return t * t * (3 - 2 * t) }
 
 const LIQ_BOTTOM = -1.42, FULLH = 2.2
-let liquidPivot, surface, foam, foamMat
+let surface, foam, foamMat
 
 // condensation maps: roughnessMap green channel multiplies material.roughness (set to 1),
 // so paint fog ~0.35 gray and droplet-cleared spots near-black. Bump = droplet relief.
@@ -86,6 +87,8 @@ function makeCondensationMaps() {
 // clear glass tumbler
 const prof = []
 for (let i = 0; i <= 24; i++) { const t = i / 24; prof.push(new THREE.Vector2(0.9 + t * 0.22, -1.55 + t * 3.15)) }
+// rolled lip: bulge out, curve over the top, tuck slightly down the inner side
+prof.push(new THREE.Vector2(1.135, 1.63), new THREE.Vector2(1.13, 1.66), new THREE.Vector2(1.10, 1.665), new THREE.Vector2(1.075, 1.64))
 const cond = makeCondensationMaps()
 const glass = new THREE.Mesh(new THREE.LatheGeometry(prof, 100), new THREE.MeshPhysicalMaterial({
   color: 0xffffff, metalness: 0, roughness: 1, roughnessMap: cond.rough,
@@ -98,23 +101,64 @@ group.add(glass)
 const base = new THREE.Mesh(new THREE.CylinderGeometry(0.9, 0.9, 0.12, 100), glass.material)
 base.position.y = -1.49; group.add(base)
 
-// vibrant matcha liquid (fills from bottom)
-liquidPivot = new THREE.Group(); liquidPivot.position.y = LIQ_BOTTOM; group.add(liquidPivot)
-const matchaMat = new THREE.MeshPhysicalMaterial({ color: 0x5f9e19, roughness: 0.36, metalness: 0, transmission: 0, ior: 1.34, clearcoat: 0.2, clearcoatRoughness: 0.55, envMapIntensity: 0.2, emissive: 0x28430f, emissiveIntensity: 0.3 })
-const liquid = new THREE.Mesh(new THREE.CylinderGeometry(1.02, 0.86, FULLH, 100), matchaMat)
-liquid.position.y = FULLH / 2; liquidPivot.add(liquid)
+// liquid: lathe matched to the glass inner wall, revealed by a clipping plane —
+// a y-scaled cylinder pokes through the tapered glass mid-fill, this can't.
+renderer.localClippingEnabled = true
+const glassR = (y) => 0.9 + 0.22 * (y + 1.55) / 3.15
+const FULL_TOP = LIQ_BOTTOM + FULLH
+const clip = new THREE.Plane(new THREE.Vector3(0, -1, 0), FULL_TOP)
+// vertex-color depth gradient: denser/darker matcha at the bottom, no emissive hack
+const matchaMat = new THREE.MeshPhysicalMaterial({ color: 0xffffff, vertexColors: true, roughness: 0.36, metalness: 0, clearcoat: 0.25, clearcoatRoughness: 0.5, envMapIntensity: 0.35, clippingPlanes: [clip] })
+const lprof = []
+for (let i = 0; i <= 20; i++) { const y = LIQ_BOTTOM + (i / 20) * FULLH; lprof.push(new THREE.Vector2(glassR(y) - 0.045, y)) }
+const liqGeo = new THREE.LatheGeometry(lprof, 100)
+{
+  const pos = liqGeo.attributes.position, col = new Float32Array(pos.count * 3)
+  const bot = new THREE.Color(0x3f6b10), top = new THREE.Color(0x6fae1e), c = new THREE.Color()
+  for (let i = 0; i < pos.count; i++) {
+    const t = (pos.getY(i) - LIQ_BOTTOM) / FULLH // 0 bottom .. 1 top
+    c.lerpColors(bot, top, t)
+    col[i * 3] = c.r; col[i * 3 + 1] = c.g; col[i * 3 + 2] = c.b
+  }
+  liqGeo.setAttribute('color', new THREE.BufferAttribute(col, 3))
+}
+const liquid = new THREE.Mesh(liqGeo, matchaMat)
+group.add(liquid)
+// matcha surface: disc riding the fill line (covers the clipped lathe's open top)
+const surfMat = new THREE.MeshPhysicalMaterial({ color: 0x6fae1e, roughness: 0.4, metalness: 0, clearcoat: 0.3, clearcoatRoughness: 0.4, envMapIntensity: 0.4 })
+surface = new THREE.Mesh(new THREE.CircleGeometry(1, 96), surfMat)
+surface.rotation.x = -Math.PI / 2; group.add(surface)
+// meniscus: subtle bright ring where liquid meets glass, tracks the fill line
+const menMat = new THREE.MeshStandardMaterial({ color: 0x74a82a, roughness: 0.25, transparent: true, opacity: 0 })
+const meniscus = new THREE.Mesh(new THREE.TorusGeometry(1, 0.016, 10, 96), menMat)
+meniscus.rotation.x = Math.PI / 2; group.add(meniscus)
 // (liquid cylinder's own top cap is the matcha surface — no separate disc)
 // foam dome (appears when nearly full)
 foamMat = new THREE.MeshStandardMaterial({ color: 0xe7ecd4, roughness: 1, transparent: true, opacity: 0 })
 foam = new THREE.Mesh(new THREE.SphereGeometry(0.99, 72, 28, 0, Math.PI * 2, 0, Math.PI / 2), foamMat)
-foam.scale.y = 0.13; group.add(foam)
+foam.scale.y = 0.09; group.add(foam)
 
 // ice cubes (clear, refractive) inside the glass
 const iceMat = new THREE.MeshPhysicalMaterial({ color: 0xffffff, roughness: 0.03, transmission: 1, thickness: 0.5, ior: 1.31, transparent: true, side: THREE.DoubleSide, envMapIntensity: 1.6, clearcoat: 1 })
 // ice floats at the matcha surface (~y 0.78) and pokes above it
-for (const [x, y, z, s, r] of [[0.32, 0.74, 0.14, 0.6, 0.7], [-0.34, 0.66, -0.12, 0.64, 1.4], [0.06, 0.92, 0.3, 0.52, 2.1], [0.28, 0.62, -0.34, 0.48, 0.4]]) {
-  const c = new THREE.Mesh(new THREE.BoxGeometry(0.46 * s, 0.46 * s, 0.46 * s), iceMat)
-  c.position.set(x, y, z); c.rotation.set(r, r * 1.6, r * 0.6); group.add(c)
+// hand-cracked ice: rounded boxes + position-hashed vertex jitter (hash keeps
+// duplicated seam vertices moving together, so no cracks open up)
+const jitter = (geo, amp) => {
+  const pos = geo.attributes.position
+  for (let i = 0; i < pos.count; i++) {
+    const x = pos.getX(i), y = pos.getY(i), z = pos.getZ(i)
+    const h = (k) => { const v = Math.sin(x * 12.9898 + y * 78.233 + z * 37.719 + k) * 43758.5453; return (v - Math.floor(v)) - 0.5 }
+    pos.setXYZ(i, x + h(1) * amp, y + h(2) * amp, z + h(3) * amp)
+  }
+  geo.computeVertexNormals()
+  return geo
+}
+// ice rides the fill line: rests low in the empty glass, floats up with the liquid
+const iceGroup = new THREE.Group(); group.add(iceGroup)
+for (const [x, y, z, s, r, sy] of [[0.32, 0.74, 0.14, 0.6, 0.7, 0.85], [-0.34, 0.66, -0.12, 0.64, 1.4, 1.1], [0.06, 0.92, 0.3, 0.52, 2.1, 0.9], [0.28, 0.62, -0.34, 0.48, 0.4, 1.15]]) {
+  const d = 0.46 * s
+  const c = new THREE.Mesh(jitter(new RoundedBoxGeometry(d, d, d, 3, d * 0.18), d * 0.07), iceMat)
+  c.position.set(x, y, z); c.rotation.set(r, r * 1.6, r * 0.6); c.scale.y = sy; iceGroup.add(c)
 }
 
 // contact shadow
@@ -132,9 +176,15 @@ scene.add(new THREE.AmbientLight(0xffffff, 0.08))
 // progress 0..1: glass fills with matcha over the first ~55%, then rotates.
 window.renderFrame = (p) => {
   const f = smooth(0, 0.55, p)
-  liquidPivot.scale.y = Math.max(f, 0.001)
   const top = LIQ_BOTTOM + f * FULLH
+  clip.constant = top
+  liquid.visible = f > 0.02
+  const rs = glassR(top) - 0.05
+  surface.position.y = top; surface.scale.set(rs, rs, 1); surface.visible = liquid.visible
   foam.position.y = top; foamMat.opacity = smooth(0.82, 1, f)
+  meniscus.position.y = top + 0.005; menMat.opacity = 0.6 * smooth(0.06, 0.2, f)
+  meniscus.scale.set(rs + 0.02, rs + 0.02, 1)
+  iceGroup.position.y = Math.max(top - FULL_TOP, -1.8)
   group.rotation.y = smooth(0.32, 1, p) * Math.PI * 2
   renderer.render(scene, camera)
 }
