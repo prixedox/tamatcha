@@ -1,6 +1,6 @@
 import { chromium } from '@playwright/test'
 import sharp from 'sharp'
-import { mkdirSync, rmSync, readdirSync, existsSync, createReadStream } from 'node:fs'
+import { mkdirSync, rmSync, readdirSync, existsSync, createReadStream, statSync } from 'node:fs'
 import { dirname, join, normalize } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { createServer } from 'node:http'
@@ -56,6 +56,6 @@ await b.close()
 server.close()
 if (SNAP === null) {
   let total = 0
-  for (const f of readdirSync(OUT)) total += (await sharp(join(OUT, f)).metadata()).size || 0
+  for (const f of readdirSync(OUT)) total += statSync(join(OUT, f)).size
   console.log('wrote', N, 'frames to', OUT, '(~' + Math.round(total / 1024) + 'KB total)')
 }
