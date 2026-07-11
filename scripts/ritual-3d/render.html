@@ -38,11 +38,59 @@ const smooth = (a, b, x) => { const t = Math.min(Math.max((x - a) / (b - a), 0),
 const LIQ_BOTTOM = -1.42, FULLH = 2.2
 let liquidPivot, surface, foam, foamMat
 
+// condensation maps: roughnessMap green channel multiplies material.roughness (set to 1),
+// so paint fog ~0.35 gray and droplet-cleared spots near-black. Bump = droplet relief.
+// Seeded PRNG keeps re-renders frame-identical.
+function makeCondensationMaps() {
+  let s = 42
+  const rnd = () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296 }
+  const W = 512, H = 1024
+  const rough = document.createElement('canvas'); rough.width = W; rough.height = H
+  const bump = document.createElement('canvas'); bump.width = W; bump.height = H
+  const rc = rough.getContext('2d'), bc = bump.getContext('2d')
+
+  // base: clear glass (low roughness) everywhere, fog band over the liquid zone.
+  // canvas y=0 maps to v=1 (rim); fog starts below the rim and covers the liquid zone.
+  rc.fillStyle = 'rgb(13,13,13)'; rc.fillRect(0, 0, W, H)
+  const fog = rc.createLinearGradient(0, 0, 0, H)
+  fog.addColorStop(0.0, 'rgba(90,90,90,0)')
+  fog.addColorStop(0.28, 'rgba(90,90,90,0.9)')
+  fog.addColorStop(0.92, 'rgba(90,90,90,0.9)')
+  fog.addColorStop(1.0, 'rgba(90,90,90,0.35)')
+  rc.fillStyle = fog; rc.fillRect(0, 0, W, H)
+  bc.fillStyle = 'black'; bc.fillRect(0, 0, W, H)
+
+  // drip trails: clear streaks wiping through the fog, droplet blob at the bottom end
+  for (let i = 0; i < 7; i++) {
+    const x = rnd() * W, y0 = H * (0.18 + rnd() * 0.25), len = H * (0.12 + rnd() * 0.28), w = 3 + rnd() * 3
+    rc.strokeStyle = 'rgb(13,13,13)'; rc.lineWidth = w; rc.lineCap = 'round'
+    rc.beginPath(); rc.moveTo(x, y0); rc.lineTo(x, y0 + len); rc.stroke()
+    const g = bc.createRadialGradient(x, y0 + len, 0, x, y0 + len, w * 1.4)
+    g.addColorStop(0, 'rgba(255,255,255,0.9)'); g.addColorStop(1, 'rgba(255,255,255,0)')
+    bc.fillStyle = g; bc.beginPath(); bc.arc(x, y0 + len, w * 1.4, 0, Math.PI * 2); bc.fill()
+  }
+
+  // droplets: cleared circles in the fog + height bumps
+  for (let i = 0; i < 220; i++) {
+    const x = rnd() * W, y = H * (0.22 + rnd() * 0.7), r = 1.5 + rnd() * rnd() * 6
+    rc.fillStyle = 'rgb(13,13,13)'; rc.beginPath(); rc.arc(x, y, r, 0, Math.PI * 2); rc.fill()
+    const g = bc.createRadialGradient(x - r * 0.25, y - r * 0.25, 0, x, y, r)
+    g.addColorStop(0, 'rgba(255,255,255,0.95)'); g.addColorStop(0.8, 'rgba(255,255,255,0.4)'); g.addColorStop(1, 'rgba(255,255,255,0)')
+    bc.fillStyle = g; bc.beginPath(); bc.arc(x, y, r, 0, Math.PI * 2); bc.fill()
+  }
+
+  const mk = (c) => { const t = new THREE.CanvasTexture(c); t.wrapS = THREE.RepeatWrapping; return t }
+  return { bump: mk(bump), rough: mk(rough) }
+}
+
 // clear glass tumbler
 const prof = []
 for (let i = 0; i <= 24; i++) { const t = i / 24; prof.push(new THREE.Vector2(0.9 + t * 0.22, -1.55 + t * 3.15)) }
+const cond = makeCondensationMaps()
 const glass = new THREE.Mesh(new THREE.LatheGeometry(prof, 100), new THREE.MeshPhysicalMaterial({
-  color: 0xffffff, metalness: 0, roughness: 0.04, transmission: 1, thickness: 0.55, ior: 1.5,
+  color: 0xffffff, metalness: 0, roughness: 1, roughnessMap: cond.rough,
+  bumpMap: cond.bump, bumpScale: 1.6,
+  transmission: 1, thickness: 0.55, ior: 1.5,
   transparent: true, side: THREE.DoubleSide, envMapIntensity: 1.5, clearcoat: 1, clearcoatRoughness: 0.04,
 }))
 group.add(glass)
