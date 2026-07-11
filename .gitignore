@@ -4,3 +4,5 @@ dist/
 .superpowers/
 test-results/
 playwright-report/
+scripts/ritual-3d/.out/
+scripts/ritual-3d/assets/

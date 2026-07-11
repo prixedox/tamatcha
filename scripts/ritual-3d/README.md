@@ -1,13 +1,20 @@
-# Ritual 3D cup turntable (dev-only)
+# Ritual 3D iced-matcha glass turntable (dev-only)
 
-Pre-renders the rotating Tamatcha cup frame sequence used by the pinned Ritual
-scroll-scrub. Output frames (`public/ritual/frame-*.webp`) are committed; CI
-never runs this.
+Pre-renders the fill-then-rotate glass frame sequence used by the pinned
+Rituál scroll-scrub. Output frames (`public/ritual/frame-*.webp`) are
+committed; CI never runs this. three.js loads from unpkg CDN in render.html;
+everything else uses installed devDeps (sharp, @playwright/test).
 
-Requires: `npm i -D three` is NOT needed (three loads from unpkg CDN in render.html).
-Uses the already-installed sharp + @playwright/test.
+One-time asset (CC0, gitignored):
 
-1. `node scripts/ritual-3d/make-label.mjs`  -> generates the cup wrap texture (label.png)
-2. serve this dir:  `python3 -m http.server 8099`  (from scripts/ritual-3d, with label.png present)
-3. `FRAMES=48 node scripts/ritual-3d/render-turntable.mjs`  -> writes transparent webp frames
-   (paths in the scripts point at a scratch dir; adjust before re-running)
+    curl -sL -o assets/studio_small_08_1k.hdr \
+      https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/studio_small_08_1k.hdr
+
+Render (from repo root — paths are repo-relative, no serving needed):
+
+    FRAMES=44 node scripts/ritual-3d/render-turntable.mjs   # full pass -> .out/frames/
+    SNAP=0.7 node scripts/ritual-3d/render-turntable.mjs    # one frame at progress 0.7 -> .out/snap.webp
+
+Software GL (SwiftShader): ~4-6 s/frame with transmission. Ship by copying
+`.out/frames/frame-*.webp` over `public/ritual/` (44 frames, keep total <= 2 MB).
+`make-label.mjs` is left over from the branded-cup era; the glass scene doesn't use it.
