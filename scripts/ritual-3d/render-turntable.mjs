@@ -1,8 +1,9 @@
 import { chromium } from '@playwright/test'
 import sharp from 'sharp'
-import { mkdirSync, rmSync, readdirSync, existsSync } from 'node:fs'
-import { dirname, join } from 'node:path'
+import { mkdirSync, rmSync, readdirSync, existsSync, createReadStream } from 'node:fs'
+import { dirname, join, normalize } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { createServer } from 'node:http'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const OUT = join(HERE, '.out', 'frames')
@@ -20,14 +21,23 @@ if (!existsSync(hdr)) {
 mkdirSync(OUT, { recursive: true })
 if (SNAP === null) for (const f of readdirSync(OUT)) rmSync(join(OUT, f))
 
-const b = await chromium.launch({ args: [
-  '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist', '--allow-file-access-from-files',
-] })
+// three's FileLoader fetch()es assets, and fetch rejects file:// URLs — so
+// serve this dir over localhost instead of loading render.html from disk.
+const server = createServer((req, res) => {
+  const path = normalize(join(HERE, decodeURIComponent(new URL(req.url, 'http://x').pathname)))
+  if (!path.startsWith(HERE) || !existsSync(path)) { res.writeHead(404); res.end(); return }
+  res.writeHead(200)
+  createReadStream(path).pipe(res)
+})
+await new Promise((ok) => server.listen(0, '127.0.0.1', ok))
+const port = server.address().port
+
+const b = await chromium.launch({ args: ['--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] })
 const ctx = await b.newContext({ viewport: { width: 1200, height: 1450 }, deviceScaleFactor: 1 })
 const p = await ctx.newPage()
 p.on('pageerror', (e) => console.log('PAGEERROR:', e.message.slice(0, 200)))
 p.on('console', (m) => { if (m.type() === 'error') console.log('CONSOLE:', m.text().slice(0, 200)) })
-await p.goto('file://' + join(HERE, 'render.html'))
+await p.goto(`http://127.0.0.1:${port}/render.html`)
 const ok = await p.waitForFunction(() => window.__ready === true, { timeout: 60000 }).then(() => true).catch(() => false)
 console.log('ready:', ok)
 if (!ok) { await b.close(); process.exit(1) }
@@ -43,6 +53,7 @@ for (let i = 0; i < N; i++) {
   if (SNAP !== null) console.log('snap @', prog, '->', file)
 }
 await b.close()
+server.close()
 if (SNAP === null) {
   let total = 0
   for (const f of readdirSync(OUT)) total += (await sharp(join(OUT, f)).metadata()).size || 0
