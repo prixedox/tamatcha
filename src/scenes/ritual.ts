@@ -2,13 +2,13 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 const FRAME_COUNT = 44
-// pre-rendered drink sequences in public/ritual/<name>/ — '' = the default
-// matcha look at public/ritual/. Switchable via the section's buttons and
-// deep-linkable via ?drink=…
-const DRINKS = ['latte', 'fizz', 'cloud', 'mate']
+// pre-rendered drink sequences in public/ritual/<name>/. Fizz is the default;
+// switchable via the section's buttons and deep-linkable via ?drink=…
+const DRINKS = ['fizz', 'cloud', 'latte', 'mate']
+const DEFAULT_DRINK = 'fizz'
 
-// per-drink step captions (the default matcha texts stay in index.html and
-// are captured from the DOM so they aren't duplicated here)
+// per-drink step captions (the ceremonial texts in index.html stay as the
+// no-JS/reduced-motion fallback, paired with the static sift/whisk/pour photos)
 type Caption = { h: string; p: string }
 const CAPTIONS: Record<string, [Caption, Caption, Caption]> = {
   latte: [
@@ -84,10 +84,6 @@ export function initRitual(reduced: boolean): void {
   const renderer = createRitualRenderer(canvas)
   const steps = Array.from(section.querySelectorAll<HTMLElement>('.step'))
   steps.forEach((s) => s.classList.add('in')) // captions handled by active state, not reveal
-  const defaultCaptions = steps.map((s) => ({
-    h: s.querySelector('h3')!.textContent!,
-    p: s.querySelector('p')!.textContent!,
-  })) as [Caption, Caption, Caption]
 
   // frame sets are cached per drink so switching back is instant
   const cache = new Map<string, HTMLImageElement[]>()
@@ -108,21 +104,21 @@ export function initRitual(reduced: boolean): void {
 
   const buttons = Array.from(section.querySelectorAll<HTMLButtonElement>('.dbtn'))
   function setDrink(name: string): void {
-    const valid = DRINKS.includes(name) ? name : ''
-    renderer.setFrames(loadSet(valid ? `ritual/${valid}/` : 'ritual/'))
-    const caps = CAPTIONS[valid] ?? defaultCaptions
+    const valid = DRINKS.includes(name) ? name : DEFAULT_DRINK
+    renderer.setFrames(loadSet(`ritual/${valid}/`))
+    const caps = CAPTIONS[valid]
     steps.forEach((s, i) => {
       s.querySelector('h3')!.textContent = caps[i].h
       s.querySelector('p')!.textContent = caps[i].p
     })
     buttons.forEach((b) => {
-      const active = (b.dataset.drink ?? '') === valid
+      const active = b.dataset.drink === valid
       b.classList.toggle('is-active', active)
       b.setAttribute('aria-pressed', String(active))
     })
-    window.__tamatcha.ritualDrink = valid || 'matcha'
+    window.__tamatcha.ritualDrink = valid
     const url = new URL(window.location.href)
-    if (valid) url.searchParams.set('drink', valid)
+    if (valid !== DEFAULT_DRINK) url.searchParams.set('drink', valid)
     else url.searchParams.delete('drink')
     history.replaceState(null, '', url)
   }
@@ -142,7 +138,7 @@ export function initRitual(reduced: boolean): void {
       steps.forEach((s, i) => s.classList.toggle('active', i === chapter))
     },
   })
-  setDrink(new URLSearchParams(window.location.search).get('drink') ?? '')
+  setDrink(new URLSearchParams(window.location.search).get('drink') ?? DEFAULT_DRINK)
   renderer.draw(0)
   window.__tamatcha.ritualRange = [st.start, st.end]
 }

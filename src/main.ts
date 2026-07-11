@@ -5,7 +5,7 @@ document.documentElement.classList.add('js')
 const caps = readCaps(window)
 const tier = decideTier(caps)
 document.documentElement.dataset.tier = tier
-window.__tamatcha = { tier, frames: 0, splats: 0, pointerSplats: 0, ritualStep: -1, ritualRange: null, ritualDrink: 'matcha' }
+window.__tamatcha = { tier, frames: 0, splats: 0, pointerSplats: 0, ritualStep: -1, ritualRange: null, ritualDrink: 'fizz' }
 
 export const reduced = caps.reducedMotion
 

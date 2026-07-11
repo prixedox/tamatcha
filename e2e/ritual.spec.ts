@@ -20,9 +20,12 @@ test('ritual scene scrubs through chapters both directions', async ({ page }) =>
   expect(await page.evaluate(() => window.__tamatcha.ritualStep)).toBe(0)
 })
 
-test('drink switcher swaps captions, frames dir, and URL', async ({ page }) => {
+test('drink switcher: fizz default, swaps captions, frames dir, and URL', async ({ page }) => {
   await page.goto('./?tier=c')
   await page.waitForFunction(() => window.__tamatcha.ritualRange !== null)
+  // fizz is the default drink: its captions and button are active on load
+  await expect(page.locator('.step[data-step="0"] h3')).toHaveText('Pyré na dno')
+  await expect(page.locator('.dbtn[data-drink="fizz"]')).toHaveClass(/is-active/)
   await scrollToRitual(page, 0.1)
   const latteFrames: string[] = []
   page.on('request', (r) => { if (r.url().includes('ritual/latte/')) latteFrames.push(r.url()) })
@@ -33,9 +36,9 @@ test('drink switcher swaps captions, frames dir, and URL', async ({ page }) => {
   expect(page.url()).toContain('drink=latte')
   await page.waitForTimeout(400)
   expect(latteFrames.length).toBeGreaterThan(0)
-  // back to the default matcha: original captions restored, param dropped
-  await page.locator('.dbtn[data-drink=""]').click()
-  await expect(page.locator('.step[data-step="0"] h3')).toHaveText('Prosíváme')
+  // back to the default fizz: captions restored, param dropped
+  await page.locator('.dbtn[data-drink="fizz"]').click()
+  await expect(page.locator('.step[data-step="0"] h3')).toHaveText('Pyré na dno')
   expect(page.url()).not.toContain('drink=')
 })
 
