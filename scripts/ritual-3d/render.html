@@ -39,6 +39,34 @@ const smooth = (a, b, x) => { const t = Math.min(Math.max((x - a) / (b - a), 0),
 const LIQ_BOTTOM = -1.42, FULLH = 2.2
 let surface, foam, foamMat
 
+// per-drink liquid styling, selected via ?drink=… (default: the original matcha).
+// stops = [t 0..1 bottom→top, color]; wobble = amplitude of the wavy layer
+// boundary (real poured layers aren't ruler-straight). Colors matched to
+// Tamatcha's own drink photos (public/img/post4_fizz) + web references.
+const DRINKS = {
+  matcha: {
+    stops: [[0, 0x3f6b10], [1, 0x6fae1e]], wobble: 0.02,
+    surface: 0x6fae1e, meniscus: 0x74a82a, foam: { y: 0.09, color: 0xe7ecd4 },
+  },
+  latte: { // white milk below, wispy blend, deep matcha above
+    stops: [[0, 0xece4d8], [0.44, 0xe4dbcc], [0.60, 0x6e9440], [0.70, 0x2e5a13], [0.88, 0x35661a], [1, 0x47821d]],
+    wobble: 0.05, surface: 0x4c8a20, meniscus: 0x5c9427, foam: { y: 0.08, color: 0xdfe8c8 },
+  },
+  fizz: { // maracuja purée bottom, pale sparkling middle, matcha top (post4_fizz)
+    stops: [[0, 0xb4590e], [0.13, 0xd07a1e], [0.20, 0xd3cdb2], [0.66, 0xdad4bc], [0.78, 0x7fae46], [1, 0x55951f]],
+    wobble: 0.03, surface: 0x67a52e, meniscus: 0x74a82a, foam: { y: 0.05, color: 0xeff3dc }, bubbles: true,
+  },
+  cloud: { // strawberry purée bottom, coconut water middle, big pale foam cloud
+    stops: [[0, 0xa83a4a], [0.13, 0xc25563], [0.20, 0xe6e1d2], [0.60, 0xeae5d7], [0.78, 0xd6e0b4], [1, 0xc8dba2]],
+    wobble: 0.03, surface: 0xe3ecc4, meniscus: 0xcfe0a0, foam: { y: 0.34, color: 0xf6f8ee },
+  },
+  mate: { // yerba: mahogany depth to golden amber top
+    stops: [[0, 0x6e2c0c], [0.40, 0xa04c12], [0.75, 0xc26a1a], [1, 0xd98a30]],
+    wobble: 0.02, surface: 0xd98a30, meniscus: 0xdf9440, foam: { y: 0.03, color: 0xf0d9b8 },
+  },
+}
+const drink = DRINKS[new URLSearchParams(location.search).get('drink')] || DRINKS.matcha
+
 // condensation maps: roughnessMap green channel multiplies material.roughness (set to 1),
 // so paint fog ~0.35 gray and droplet-cleared spots near-black. Bump = droplet relief.
 // Seeded PRNG keeps re-renders frame-identical.
@@ -107,36 +135,60 @@ renderer.localClippingEnabled = true
 const glassR = (y) => 0.9 + 0.22 * (y + 1.55) / 3.15
 const FULL_TOP = LIQ_BOTTOM + FULLH
 const clip = new THREE.Plane(new THREE.Vector3(0, -1, 0), FULL_TOP)
-// vertex-color depth gradient: denser/darker matcha at the bottom, no emissive hack
+// vertex-color depth gradient: multi-stop per-drink layers, no emissive hack
 const matchaMat = new THREE.MeshPhysicalMaterial({ color: 0xffffff, vertexColors: true, roughness: 0.36, metalness: 0, clearcoat: 0.25, clearcoatRoughness: 0.5, envMapIntensity: 0.35, clippingPlanes: [clip] })
 const lprof = []
-for (let i = 0; i <= 20; i++) { const y = LIQ_BOTTOM + (i / 20) * FULLH; lprof.push(new THREE.Vector2(glassR(y) - 0.045, y)) }
+for (let i = 0; i <= 60; i++) { const y = LIQ_BOTTOM + (i / 60) * FULLH; lprof.push(new THREE.Vector2(glassR(y) - 0.045, y)) }
 const liqGeo = new THREE.LatheGeometry(lprof, 100)
 {
+  const stops = drink.stops.map(([t, c]) => [t, new THREE.Color(c)])
+  const grade = (t, out) => {
+    let i = 0
+    while (i < stops.length - 2 && t > stops[i + 1][0]) i++
+    const k = Math.min(Math.max((t - stops[i][0]) / Math.max(stops[i + 1][0] - stops[i][0], 1e-6), 0), 1)
+    return out.lerpColors(stops[i][1], stops[i + 1][1], k)
+  }
   const pos = liqGeo.attributes.position, col = new Float32Array(pos.count * 3)
-  const bot = new THREE.Color(0x3f6b10), top = new THREE.Color(0x6fae1e), c = new THREE.Color()
+  const c = new THREE.Color()
   for (let i = 0; i < pos.count; i++) {
-    const t = (pos.getY(i) - LIQ_BOTTOM) / FULLH // 0 bottom .. 1 top
-    c.lerpColors(bot, top, t)
+    // wavy layer boundary: low-frequency wobble around the circumference
+    const a = Math.atan2(pos.getZ(i), pos.getX(i))
+    const wob = (Math.sin(a * 3 + 1.7) * 0.4 + Math.sin(a * 7 + 0.3) * 0.3 + Math.sin(a * 13 + 2.1) * 0.3) * drink.wobble
+    const t = (pos.getY(i) - LIQ_BOTTOM) / FULLH + wob // 0 bottom .. 1 top
+    grade(Math.min(Math.max(t, 0), 1), c)
     col[i * 3] = c.r; col[i * 3 + 1] = c.g; col[i * 3 + 2] = c.b
   }
   liqGeo.setAttribute('color', new THREE.BufferAttribute(col, 3))
 }
 const liquid = new THREE.Mesh(liqGeo, matchaMat)
 group.add(liquid)
-// matcha surface: disc riding the fill line (covers the clipped lathe's open top)
-const surfMat = new THREE.MeshPhysicalMaterial({ color: 0x6fae1e, roughness: 0.4, metalness: 0, clearcoat: 0.3, clearcoatRoughness: 0.4, envMapIntensity: 0.4 })
+// fizz: tiny bubbles suspended in the liquid, revealed by the same clip plane
+if (drink.bubbles) {
+  let bs = 7
+  const brnd = () => { bs = (bs * 1664525 + 1013904223) >>> 0; return bs / 4294967296 }
+  const bubMat = new THREE.MeshPhysicalMaterial({ color: 0xffffff, roughness: 0.1, transparent: true, opacity: 0.45, envMapIntensity: 1.2, clippingPlanes: [clip] })
+  const bubGeo = new THREE.SphereGeometry(1, 10, 8)
+  for (let i = 0; i < 55; i++) {
+    const y = LIQ_BOTTOM + 0.25 + brnd() * (FULLH - 0.35)
+    const rr = Math.sqrt(brnd()) * (glassR(y) - 0.14), a = brnd() * Math.PI * 2
+    const b = new THREE.Mesh(bubGeo, bubMat)
+    b.scale.setScalar(0.012 + brnd() * 0.02)
+    b.position.set(Math.cos(a) * rr, y, Math.sin(a) * rr)
+    group.add(b)
+  }
+}
+// drink surface: disc riding the fill line (covers the clipped lathe's open top)
+const surfMat = new THREE.MeshPhysicalMaterial({ color: drink.surface, roughness: 0.4, metalness: 0, clearcoat: 0.3, clearcoatRoughness: 0.4, envMapIntensity: 0.4 })
 surface = new THREE.Mesh(new THREE.CircleGeometry(1, 96), surfMat)
 surface.rotation.x = -Math.PI / 2; group.add(surface)
 // meniscus: subtle bright ring where liquid meets glass, tracks the fill line
-const menMat = new THREE.MeshStandardMaterial({ color: 0x74a82a, roughness: 0.25, transparent: true, opacity: 0 })
+const menMat = new THREE.MeshStandardMaterial({ color: drink.meniscus, roughness: 0.25, transparent: true, opacity: 0 })
 const meniscus = new THREE.Mesh(new THREE.TorusGeometry(1, 0.016, 10, 96), menMat)
 meniscus.rotation.x = Math.PI / 2; group.add(meniscus)
-// (liquid cylinder's own top cap is the matcha surface — no separate disc)
-// foam dome (appears when nearly full)
-foamMat = new THREE.MeshStandardMaterial({ color: 0xe7ecd4, roughness: 1, transparent: true, opacity: 0 })
+// foam dome (appears when nearly full; the Cloud's big fluffy cap lives here)
+foamMat = new THREE.MeshStandardMaterial({ color: drink.foam.color, roughness: 1, transparent: true, opacity: 0 })
 foam = new THREE.Mesh(new THREE.SphereGeometry(0.99, 72, 28, 0, Math.PI * 2, 0, Math.PI / 2), foamMat)
-foam.scale.y = 0.09; group.add(foam)
+foam.scale.y = drink.foam.y; group.add(foam)
 
 // ice cubes (clear, refractive) inside the glass
 const iceMat = new THREE.MeshPhysicalMaterial({ color: 0xffffff, roughness: 0.03, transmission: 1, thickness: 0.5, ior: 1.31, transparent: true, side: THREE.DoubleSide, envMapIntensity: 1.6, clearcoat: 1 })

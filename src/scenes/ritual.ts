@@ -2,9 +2,14 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 const FRAME_COUNT = 44
+// ?drink=latte|fizz|cloud|mate selects an alternative pre-rendered drink
+// sequence (A/B testing the Rituál look); anything else = the default matcha.
+const DRINKS = ['latte', 'fizz', 'cloud', 'mate']
+const drink = new URLSearchParams(window.location.search).get('drink') ?? ''
+const dir = DRINKS.includes(drink) ? `ritual/${drink}/` : 'ritual/'
 // import.meta.env.BASE_URL is Vite's base ('/tamatcha/'); a bare '/ritual/...'
 // would ignore the base and 404 under the project-page URL.
-const framePath = (i: number) => `${import.meta.env.BASE_URL}ritual/frame-${String(i + 1).padStart(3, '0')}.webp`
+const framePath = (i: number) => `${import.meta.env.BASE_URL}${dir}frame-${String(i + 1).padStart(3, '0')}.webp`
 
 // Preload the whisk-video frame sequence and return a drawer that paints the
 // frame for a given progress (0..1) onto the canvas, cover-fit. Frames not yet

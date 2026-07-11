@@ -14,7 +14,13 @@ Render (from repo root — paths are repo-relative, no serving needed):
 
     FRAMES=44 node scripts/ritual-3d/render-turntable.mjs   # full pass -> .out/frames/
     SNAP=0.7 node scripts/ritual-3d/render-turntable.mjs    # one frame at progress 0.7 -> .out/snap.webp
+    DRINK=latte FRAMES=44 node scripts/ritual-3d/render-turntable.mjs  # drink variant -> .out/frames-latte/
+
+DRINK selects a liquid style from the DRINKS config in render.html
+(latte | fizz | cloud | mate — the menu drinks; unset = default matcha).
+The site picks a variant at runtime via ?drink=… (see src/scenes/ritual.ts);
+variant frames ship in `public/ritual/<drink>/`.
 
 Software GL (SwiftShader): ~4-6 s/frame with transmission. Ship by copying
-`.out/frames/frame-*.webp` over `public/ritual/` (44 frames, keep total <= 2 MB).
+`.out/frames/frame-*.webp` over `public/ritual/` (44 frames, keep total <= 2 MB per set).
 `make-label.mjs` is left over from the branded-cup era; the glass scene doesn't use it.

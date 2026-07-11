@@ -6,7 +6,8 @@ import { fileURLToPath } from 'node:url'
 import { createServer } from 'node:http'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
-const OUT = join(HERE, '.out', 'frames')
+const DRINK = process.env.DRINK || '' // '' = default matcha look; latte|fizz|cloud|mate
+const OUT = join(HERE, '.out', DRINK ? `frames-${DRINK}` : 'frames')
 const SNAP = process.env.SNAP ? parseFloat(process.env.SNAP) : null
 const N = SNAP !== null ? 1 : parseInt(process.env.FRAMES || '44')
 const WIDTH = 900
@@ -37,7 +38,7 @@ const ctx = await b.newContext({ viewport: { width: 1200, height: 1450 }, device
 const p = await ctx.newPage()
 p.on('pageerror', (e) => console.log('PAGEERROR:', e.message.slice(0, 200)))
 p.on('console', (m) => { if (m.type() === 'error') console.log('CONSOLE:', m.text().slice(0, 200)) })
-await p.goto(`http://127.0.0.1:${port}/render.html`)
+await p.goto(`http://127.0.0.1:${port}/render.html${DRINK ? `?drink=${DRINK}` : ''}`)
 const ok = await p.waitForFunction(() => window.__ready === true, { timeout: 60000 }).then(() => true).catch(() => false)
 console.log('ready:', ok)
 if (!ok) { await b.close(); process.exit(1) }
@@ -48,7 +49,7 @@ for (let i = 0; i < N; i++) {
   await p.evaluate((d) => window.renderFrame(d), prog)
   await p.waitForTimeout(90)
   const png = await p.locator('canvas').screenshot({ omitBackground: true })
-  const file = SNAP !== null ? join(HERE, '.out', 'snap.webp') : join(OUT, `frame-${String(i + 1).padStart(3, '0')}.webp`)
+  const file = SNAP !== null ? join(HERE, '.out', DRINK ? `snap-${DRINK}.webp` : 'snap.webp') : join(OUT, `frame-${String(i + 1).padStart(3, '0')}.webp`)
   await sharp(png).resize(WIDTH, null, { fit: 'inside' }).webp({ quality: 70, alphaQuality: 88, effort: 5 }).toFile(file)
   if (SNAP !== null) console.log('snap @', prog, '->', file)
 }
