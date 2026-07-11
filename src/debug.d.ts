@@ -9,6 +9,7 @@ declare global {
       pointerSplats: number
       ritualStep: number
       ritualRange: [number, number] | null
+      ritualDrink: string
     }
   }
 }

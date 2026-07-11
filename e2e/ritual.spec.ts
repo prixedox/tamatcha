@@ -20,6 +20,25 @@ test('ritual scene scrubs through chapters both directions', async ({ page }) =>
   expect(await page.evaluate(() => window.__tamatcha.ritualStep)).toBe(0)
 })
 
+test('drink switcher swaps captions, frames dir, and URL', async ({ page }) => {
+  await page.goto('./?tier=c')
+  await page.waitForFunction(() => window.__tamatcha.ritualRange !== null)
+  await scrollToRitual(page, 0.1)
+  const latteFrames: string[] = []
+  page.on('request', (r) => { if (r.url().includes('ritual/latte/')) latteFrames.push(r.url()) })
+  await page.locator('.dbtn[data-drink="latte"]').click()
+  await expect(page.locator('.step[data-step="0"] h3')).toHaveText('Mléko a led')
+  await expect(page.locator('.dbtn[data-drink="latte"]')).toHaveClass(/is-active/)
+  expect(await page.evaluate(() => window.__tamatcha.ritualDrink)).toBe('latte')
+  expect(page.url()).toContain('drink=latte')
+  await page.waitForTimeout(400)
+  expect(latteFrames.length).toBeGreaterThan(0)
+  // back to the default matcha: original captions restored, param dropped
+  await page.locator('.dbtn[data-drink=""]').click()
+  await expect(page.locator('.step[data-step="0"] h3')).toHaveText('Prosíváme')
+  expect(page.url()).not.toContain('drink=')
+})
+
 test('reduced motion: no pin, static ritual photos visible', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await page.goto('./')
