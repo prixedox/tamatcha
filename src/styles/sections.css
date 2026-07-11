@@ -78,13 +78,22 @@ html:not(.js) .nav{background:rgba(14,39,28,.9);backdrop-filter:blur(14px)}
 .menu{background:var(--paper)}
 .menu__grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(1rem,2vw,1.5rem);margin-top:3rem}
 .mcard{background:var(--cream-2);border:1px solid var(--line);border-radius:var(--r);
+  border-top:3px solid var(--accent,var(--matcha));box-shadow:0 10px 30px rgba(24,58,44,.07);
   padding:clamp(1.4rem,2.4vw,2rem);display:flex;flex-direction:column;gap:.9rem;
   transition:transform .4s var(--ease),box-shadow .4s,border-color .4s}
-.mcard:hover{transform:translateY(-6px);box-shadow:0 26px 50px -30px rgba(24,58,44,.5);border-color:transparent}
+.mcard:hover{transform:translateY(-6px);box-shadow:0 26px 50px -30px rgba(24,58,44,.5);border-color:transparent;border-top-color:var(--accent,var(--matcha))}
+/* the drink's own render (reused Rituál frame) anchored to the card corner,
+   over a soft forest blob so the milky glass doesn't wash out on cream */
+.mcard > .mcard__drink{position:absolute;right:14px;bottom:10px;width:112px;height:auto;z-index:1;pointer-events:none;
+  filter:drop-shadow(0 10px 18px rgba(24,58,44,.25))}
+/* shadow pool grounding the glass in the card corner */
+.mcard::after{content:"";position:absolute;right:10px;bottom:8px;width:130px;height:34px;border-radius:50%;
+  background:radial-gradient(ellipse,rgba(24,58,44,.22),transparent 70%);filter:blur(5px);pointer-events:none}
+.mcard .chips{padding-right:120px}
 .mcard__top{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem}
 .mcard h3{font-size:1.55rem;letter-spacing:-.02em}
 .mcard .ml{font-size:.78rem;font-weight:700;color:var(--ink-60);letter-spacing:.08em;text-transform:uppercase;margin-top:.35rem}
-.mcard .price{font-family:var(--display);font-weight:800;font-size:1.7rem;color:var(--forest);white-space:nowrap;line-height:1}
+.mcard .price{font-family:var(--display);font-weight:800;font-size:1.7rem;color:var(--accent,var(--forest));white-space:nowrap;line-height:1}
 .mcard .price sup{font-size:.62em;font-weight:700;margin-left:.15em;top:-.2em}
 .mcard .formula{font-size:.9rem;color:var(--matcha-deep);font-weight:600}
 .mcard .desc{font-size:.98rem;color:var(--ink-60)}
@@ -121,12 +130,14 @@ html:not(.js) .nav{background:rgba(14,39,28,.9);backdrop-filter:blur(14px)}
 .info__row a p:hover,.info__row a:hover p{color:var(--matcha)}
 .hours{display:flex;gap:2.2rem}
 .hours .tnum{color:var(--cream)}
-.freecard{margin-top:1.6rem;background:linear-gradient(135deg,var(--matcha),var(--matcha-deep));color:var(--forest-2);
+/* oxblood: bridges into the footer bar directly below (brand color otherwise
+   appearing from nowhere) */
+.freecard{margin-top:1.6rem;background:linear-gradient(135deg,#5b2b25,var(--oxblood));color:var(--cream);
   border-radius:var(--r);padding:1.5rem 1.6rem;display:flex;gap:1rem;align-items:center}
 .freecard .big{font-family:var(--display);font-weight:800;font-size:1.15rem;line-height:1.1}
-.freecard p{font-size:.92rem;font-weight:600;margin-top:.2rem}
-.freecard .gift{flex:none;width:52px;height:52px;border-radius:14px;background:rgba(14,39,28,.16);display:grid;place-items:center}
-.freecard .gift svg{width:26px;height:26px;color:var(--forest-2)}
+.freecard p{font-size:.92rem;font-weight:600;margin-top:.2rem;color:var(--cream-70)}
+.freecard .gift{flex:none;width:52px;height:52px;border-radius:14px;background:rgba(244,239,228,.12);display:grid;place-items:center}
+.freecard .gift svg{width:26px;height:26px;color:var(--matcha)}
 
 /* map card */
 .mapcard{border-radius:var(--r);overflow:hidden;position:relative;background:var(--forest-3);min-height:340px;
@@ -187,6 +198,12 @@ html:not(.js) .nav{background:rgba(14,39,28,.9);backdrop-filter:blur(14px)}
 .hero__canvas{position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity .9s var(--ease)}
 .hero--gl .hero__canvas{opacity:1}
 .hero__scrim{position:absolute;inset:0;pointer-events:none;background:radial-gradient(90% 75% at 38% 55%, rgba(14,39,28,.6), rgba(14,39,28,.18) 62%, transparent)}
+/* the product, floating over the sim in the hero's free right half */
+.hero__drink{position:absolute;right:5vw;top:50%;width:min(34vw,440px);height:auto;z-index:1;pointer-events:none;
+  filter:drop-shadow(0 34px 60px rgba(0,0,0,.38));animation:drinkFloat 7s ease-in-out infinite}
+@keyframes drinkFloat{0%,100%{transform:translateY(-52%) rotate(-1.2deg)}50%{transform:translateY(-48%) rotate(1.2deg)}}
+@media (max-width:900px){.hero__drink{display:none}}
+@media (prefers-reduced-motion:reduce){.hero__drink{animation:none;transform:translateY(-50%)}}
 .hero__content{position:relative;z-index:2;padding-block:7rem 5rem;max-width:640px}
 .hero__content .eyebrow{color:var(--matcha)}
 .hero__content h1{color:var(--cream)}
@@ -254,7 +271,7 @@ html:not(.js) .about__copy .reveal{clip-path:none}
 
 /* ===== menu card fx ===== */
 .mcard{position:relative;overflow:hidden}
-.mcard > :not(.mcard__fx){position:relative;z-index:1}
+.mcard > :not(.mcard__fx):not(.mcard__drink){position:relative;z-index:1}
 .mcard__fx{position:absolute;inset:0;pointer-events:none;opacity:.55}
 .mcard__fx span{position:absolute;display:block}
 
