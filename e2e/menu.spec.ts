@@ -1,25 +1,26 @@
 import { test, expect } from '@playwright/test'
 
-test('menu fx layers present, decorative, and text stays readable', async ({ page }) => {
-  await page.goto('./?tier=c')
-  await expect(page.locator('.mcard__fx')).toHaveCount(4)
-  for (const fx of await page.locator('.mcard__fx').all()) {
-    await expect(fx).toHaveAttribute('aria-hidden', 'true')
+test('menu: 4 drinks, screens-version prices, real photos load', async ({ page }) => {
+  await page.goto('./')
+  await expect(page.locator('.mcard')).toHaveCount(4)
+  await expect(page.locator('.mcard .price')).toHaveText([
+    '119,- Kč', '119,- Kč', '119,- Kč', '79,- Kč',
+  ])
+  // lazy images: bring each into view, then poll until decoded
+  for (const img of await page.locator('.mcard__drink').all()) {
+    await img.scrollIntoViewIfNeeded()
+    await expect(img).toBeVisible()
+    await expect
+      .poll(() => img.evaluate((el) => (el as HTMLImageElement).naturalWidth))
+      .toBeGreaterThan(0)
   }
-  // text container sits above fx layer (.mcard > :not(.mcard__fx) { z-index: 1 })
-  const z = await page.locator('.mcard__top').first().evaluate(
-    (el) => getComputedStyle(el).zIndex)
-  expect(z).toBe('1')
-  await expect(page.locator('.mcard h3').first()).toBeVisible()
 })
 
-test.describe('no JavaScript', () => {
-  test.use({ javaScriptEnabled: false })
-
-  test('menu fx are paused (static first frame) without JS', async ({ page }) => {
-    await page.goto('./')
-    const state = await page.locator('.mcard__fx').first().evaluate(
-      (el) => getComputedStyle(el).animationPlayState)
-    expect(state).toBe('paused')
-  })
+test('menu: screens wording, not flyer wording', async ({ page }) => {
+  await page.goto('./')
+  const text = await page.locator('#menu').innerText()
+  expect(text).toContain('( matcha, soda, pyré dle výběru )')
+  expect(text).toContain('( matcha cloud, mléko, pyré dle výběru )')
+  expect(text).not.toContain('tonic')
+  expect(text).not.toContain('kokosová voda')
 })

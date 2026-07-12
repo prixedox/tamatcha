@@ -1,26 +1,24 @@
 :root{
-  --forest:#183A2C;        /* primary deep matcha ground */
-  --forest-2:#0E271C;      /* darkest, footer / gradients */
-  --forest-3:#21503C;      /* lifted forest */
-  --matcha:#8FB94B;        /* bright matcha accent (on dark) */
-  --matcha-deep:#5E8A34;   /* accent that stays legible on cream */
-  --cream:#ECE6D7;         /* warm paper ground */
-  --cream-2:#F4EFE4;       /* card cream */
-  --paper:#F8F4EB;         /* lightest paper */
-  --oxblood:#43201D;       /* their footer bar */
-  --ink:#1B241E;           /* text on cream (green-biased near-black) */
-  --ink-60:rgba(27,36,30,.68);
-  --line:rgba(24,58,44,.14);
-  --cream-70:rgba(236,230,215,.72);
-  --cream-46:rgba(236,230,215,.46);
+  --paper:#F3F0ED;         /* page ground (flyer background) */
+  --cream:#E6E2DA;         /* official cream — cards, bands */
+  --watermark:#E3DFD7;     /* giant pictogram behind sections */
+  --emerald:#154230;       /* headings, logo, primary */
+  --emerald-2:#1B5540;     /* hover lift on emerald */
+  --coal:#101111;          /* body text */
+  --coal-60:rgba(16,17,17,.64);
+  --burgundy:#5D1E21;      /* contact band */
+  --gold:#A6824A;          /* eyebrows, micro-accents */
+  --line:rgba(21,66,48,.14);
+  --cream-80:rgba(230,226,218,.8);
+  --cream-16:rgba(230,226,218,.16);
 
   --wrap:1200px;
   --pad:clamp(1.25rem,5vw,3rem);
   --sp-section:clamp(4.5rem,9vw,8rem);
   --r:20px;
 
-  --display:'Bricolage Grotesque',ui-sans-serif,system-ui,sans-serif;
-  --body:'Hanken Grotesk',ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;
+  --display:'Clash Display',ui-sans-serif,system-ui,sans-serif;
+  --body:'Montserrat',ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;
 
   --ease:cubic-bezier(.22,.61,.36,1);
 }

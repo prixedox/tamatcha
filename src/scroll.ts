@@ -5,7 +5,7 @@ import Lenis from 'lenis'
 export function initScroll(reduced: boolean): void {
   gsap.registerPlugin(ScrollTrigger)
 
-  const reveals = gsap.utils.toArray<HTMLElement>('.reveal, .draw')
+  const reveals = gsap.utils.toArray<HTMLElement>('.reveal')
 
   if (reduced) {
     reveals.forEach((el) => el.classList.add('in'))
