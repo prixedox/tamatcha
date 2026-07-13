@@ -24,6 +24,15 @@ vygenerovat klip, prohnat ho skriptem a commitnout výstup. Žádná změna kód
 4. Zkontroluj: bílé pozadí bez stínů scény, žádný pohyb kamery, obsah
    drinku se nerozpadá. Případně re-generuj (100 kreditů/den zdarma).
 
+   ⚠️ Poučení z prvního pokusu (13. 7.): prompt, který jen POPISUJE drink
+   („A glass of layered matcha and passionfruit…"), vede k pomalému
+   nájezdu kamery (zoom-in) a žádné rotaci — Seedance to tak dělá
+   defaultně. Prompt MUSÍ být příkaz ke kamerové technice, ne popis
+   scény. Použij prompt výše beze změn a přidej na konec ještě:
+   "Do not zoom. Do not push in. The camera never moves — only the
+   glass rotates on its own vertical axis, like on a product turntable."
+   A nastav délku na 10 s (default je 5 s).
+
 ## 2. Připrav frames
 
 ```sh
