@@ -11,7 +11,7 @@ const STEP_THRESHOLDS = [0, 0.33, 0.66]
 
 export function initRitual(reduced: boolean): void {
   if (reduced) return
-  if (matchMedia('(max-width: 860px)').matches) return
+  const mobile = matchMedia('(max-width: 860px)').matches
   const section = document.querySelector<HTMLElement>('.ritual')
   const stepsWrap = section?.querySelector<HTMLElement>('.steps')
   if (!section || !stepsWrap) return
@@ -41,7 +41,6 @@ export function initRitual(reduced: boolean): void {
     canvas.height = manifest.height
     stepsWrap!.before(canvas)
     const ctx = canvas.getContext('2d')
-    section!.classList.add('ritual-live')
 
     function draw(p: number): void {
       if (!ctx) return
@@ -53,6 +52,23 @@ export function initRitual(reduced: boolean): void {
     }
     frames[0].addEventListener('load', () => draw(0))
     draw(0)
+
+    if (mobile) {
+      // no pin on touch devices: the section scrolls naturally and its
+      // transit through the viewport drives the rotation
+      section!.classList.add('ritual-mobile')
+      ScrollTrigger.create({
+        id: 'ritual',
+        trigger: section,
+        start: 'top 85%',
+        end: 'bottom 15%',
+        scrub: true,
+        onUpdate: (self) => draw(Math.min(0.999, self.progress)),
+      })
+      return
+    }
+
+    section!.classList.add('ritual-live')
 
     const setActive = (p: number): void => {
       steps.forEach((step, i) => step.classList.toggle('active', p >= STEP_THRESHOLDS[i]))

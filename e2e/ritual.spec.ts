@@ -40,3 +40,18 @@ test.describe('ritual rotation scene (JS, desktop)', () => {
     await expect(page.locator('.step').nth(2)).toBeVisible()
   })
 })
+
+test.describe('mobile rotation (no pin)', () => {
+  test.use({ viewport: { width: 390, height: 844 } })
+  test('canvas rotates with natural scroll, no pinned scene', async ({ page }) => {
+    await page.goto('./')
+    const section = page.locator('.ritual')
+    await expect(section).toHaveClass(/ritual-mobile/)
+    await expect(section).not.toHaveClass(/ritual-live/)
+    await expect(page.locator('.ritual__canvas')).toBeVisible()
+    // steps reveal via the normal mechanism; the .active choreography is desktop-only
+    await section.scrollIntoViewIfNeeded()
+    await expect(page.locator('.step').nth(2)).toHaveClass(/\bin\b/)
+    await expect(page.locator('.step.active')).toHaveCount(0)
+  })
+})
