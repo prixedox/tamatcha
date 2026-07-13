@@ -115,6 +115,24 @@ main section[id]{scroll-margin-top:calc(72px + .75rem)}
 .freecard .big{font-family:var(--display);font-weight:600;font-size:1.15rem;color:var(--emerald)}
 .freecard p{color:var(--coal-60);font-size:.95rem;margin-top:.2rem}
 
+/* ===== drink showcase (JS-enhanced lineup; static strip is the fallback) ===== */
+.showcase-on{padding-block:clamp(2rem,4vw,3rem)}
+.showcase-on .head{max-width:none}
+.showcase__stage{display:grid;grid-template-columns:auto minmax(0,22rem);align-items:center;justify-content:center;gap:clamp(1.5rem,4vw,3.5rem);margin-top:1.6rem}
+.showcase__img,.showcase__canvas{grid-area:1/1;height:min(48vh,430px);width:auto;justify-self:center}
+.showcase__canvas{background:#fff;border-radius:var(--r)}
+.showcase__cap{grid-area:1/2}
+.showcase__title{font-size:clamp(1.8rem,3.4vw,2.6rem)}
+.showcase__formula{color:var(--coal-60);margin-top:.6rem}
+.showcase__stage.swap .showcase__img,.showcase__stage.swap .showcase__canvas,.showcase__stage.swap .showcase__cap{animation:swapfade .35s var(--ease)}
+@keyframes swapfade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.showcase-on .lineup__strip{max-width:560px;margin-inline:auto;gap:.8rem;margin-top:2rem;align-items:end}
+.showcase-on .lineup__item{cursor:pointer;opacity:.45;transition:opacity .3s var(--ease)}
+.showcase-on .lineup__item.is-active{opacity:1}
+.showcase-on .lineup__item img{max-height:96px;width:auto;margin-inline:auto}
+.showcase-on .lineup__item figcaption{font-size:.7rem;margin-top:.4rem;display:inline-block;border-bottom:2px solid transparent;padding-bottom:.15rem}
+.showcase-on .lineup__item.is-active figcaption{border-bottom-color:var(--emerald)}
+
 /* ===== visit (burgundy band, like the flyer footer) ===== */
 .visit{background:var(--burgundy);color:var(--cream);overflow:hidden}
 .visit .eyebrow{color:var(--cream-80)}
