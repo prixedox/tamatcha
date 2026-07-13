@@ -22,9 +22,8 @@ test.describe('mobile nav toggle', () => {
 })
 
 test('nav is legible at top of page — has a backing over the hero (not fully transparent)', async ({ page }) => {
-  // Regression: the sticky nav used to sit over the cream body above the hero,
-  // rendering cream links on cream (invisible). The fixed nav now overlays the
-  // dark hero with a scrim gradient, so at scrollY 0 it must have a backing.
+  // The fixed nav overlays page content at scrollY 0, so it needs an opaque
+  // backing on the paper background — otherwise links float over content.
   await page.goto('./')
   const { image, color } = await page.locator('#nav').evaluate((el) => {
     const cs = getComputedStyle(el)
@@ -44,6 +43,10 @@ test.describe('no JavaScript', () => {
 
   test('anchor navigation lands below the fixed nav without JS', async ({ page }) => {
     await page.goto('./#menu')
+    // no-JS pages keep html{scroll-behavior:smooth} — poll until the scroll settles
+    await expect
+      .poll(() => page.evaluate(() => document.getElementById('menu')!.getBoundingClientRect().top))
+      .toBeLessThanOrEqual(120)
     const top = await page.evaluate(() => document.getElementById('menu')!.getBoundingClientRect().top)
     expect(top).toBeGreaterThanOrEqual(72)
   })

@@ -6,8 +6,6 @@ export default defineConfig({
   use: {
     baseURL: 'http://localhost:4173/tamatcha/',
     viewport: { width: 1280, height: 800 },
-    // software WebGL so tier A/B run in headless CI
-    launchOptions: { args: ['--enable-unsafe-swiftshader'] },
   },
   webServer: {
     command: 'npm run preview',

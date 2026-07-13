@@ -1,4 +1,4 @@
-# Tamatcha — web v2 „Living Matcha"
+# Tamatcha — web
 
 Jednostránkový web pro **Tamatcha**, první matcha bar v Ostravě — postavený na oficiálním brand balíčku (Clash Display + Montserrat, emerald/cream/gold/burgundy paleta, reálné produktové fotografie).
 
