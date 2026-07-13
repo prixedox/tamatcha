@@ -9,6 +9,7 @@
     "test": "vitest run --passWithNoTests",
     "e2e": "playwright test",
     "assets:brand": "node scripts/brand-assets.mjs",
+    "turntable": "node scripts/turntable-prep.mjs",
     "assets:img": "node scripts/optimize-images.mjs",
     "check:budgets": "node scripts/check-budgets.mjs"
   },
