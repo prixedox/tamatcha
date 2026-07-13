@@ -112,10 +112,20 @@ export function initShowcase(reduced: boolean): void {
     },
   })
 
-  // thumbnail click jumps to that drink's scroll segment
+  // thumbnail click/keyboard jumps to that drink's scroll segment
   items.forEach((item, i) => {
-    item.addEventListener('click', () => {
+    const jump = (): void => {
       window.scrollTo(0, st.start + ((st.end - st.start) * (i + 0.5)) / SEGMENTS)
+    }
+    item.setAttribute('tabindex', '0')
+    item.setAttribute('role', 'button')
+    item.setAttribute('aria-label', `Zobrazit ${item.dataset.name ?? ''}`)
+    item.addEventListener('click', jump)
+    item.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault()
+        jump()
+      }
     })
   })
 }

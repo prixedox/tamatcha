@@ -16,11 +16,11 @@ test.describe('drink showcase (JS, desktop)', () => {
       .locator('.lineup')
       .evaluate((el) => el.getBoundingClientRect().top + window.scrollY)
     // pin lasts 3 viewport heights (end: '+=300%'); 2.9vh ≈ segment 5
-    await page.evaluate((y) => window.scrollTo(0, y), sectionTop + 0.97 * 3 * 800)
+    await page.evaluate((t) => window.scrollTo(0, t + 0.97 * 3 * window.innerHeight), sectionTop)
     await expect(page.locator('.showcase__title')).toHaveText('Iced Yerba Maté')
     await expect(page.locator('.lineup__item.is-active figcaption')).toHaveText('Iced Yerba Maté')
     // middle of the pin ≈ third drink
-    await page.evaluate((y) => window.scrollTo(0, y), sectionTop + 0.5 * 3 * 800)
+    await page.evaluate((t) => window.scrollTo(0, t + 0.5 * 3 * window.innerHeight), sectionTop)
     await expect(page.locator('.showcase__title')).toHaveText('Hot Matcha Latté')
   })
 
@@ -44,6 +44,16 @@ test.describe('drink showcase (JS, desktop)', () => {
     await expect(page.locator('.showcase__title')).toHaveText('Hot Matcha Latté')
     await expect(page.locator('.showcase__canvas')).toBeHidden()
     await expect(page.locator('.showcase__img')).toBeVisible()
+  })
+
+  test('thumbnails are keyboard-activatable buttons that jump to the drink', async ({ page }) => {
+    await page.goto('./')
+    await expect(page.locator('.lineup')).toHaveClass(/showcase-on/)
+    const third = page.locator('.lineup__item').nth(2)
+    await expect(third).toHaveAttribute('role', 'button')
+    await third.focus()
+    await page.keyboard.press('Enter')
+    await expect(page.locator('.showcase__title')).toHaveText('Hot Matcha Latté')
   })
 
   test('reduced motion: no pin, no stage, static strip', async ({ page }) => {
