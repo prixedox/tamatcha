@@ -37,10 +37,19 @@ vygenerovat klip, prohnat ho skriptem a commitnout výstup. Žádná změna kód
 
 ```sh
 npm i -D ffmpeg-static        # jednorázově
-npm run turntable -- fizz ~/Downloads/fizz-turntable.mp4
+npm run turntable -- fizz ~/Downloads/fizz-turntable.mp4 --from 0.2 --to 3.25
 ```
 
 Výstup: `public/brand/turntable/fizz/frame-001..048.webp` + `manifest.json`.
+
+Skript automaticky ořízne frame na bounding box drinku a odstraní bílé
+pozadí (edge-connected flood fill — led/pěna uvnitř skla přežijí), takže
+výsledek je průhledný výřez jako produktové fotky.
+
+⚠️ Modely často otočí sklenici tam a zpátky. Zkontroluj směr rotace a
+`--from/--to` vyber jen jednosměrný úsek: extrahuj náhledy a najdi bod
+obratu (frame-to-frame rozdíl klesne k nule = pauza před obratem).
+U Kling 3.0 Turbo 5s klipu to bývá ~3.3 s.
 
 ## 3. Ověř a nasaď
 
@@ -51,6 +60,5 @@ git push                        # GH Pages mirror
 # produkci aktualizuje /deploy (tamatcha.cz)
 ```
 
-Poznámka: frames mají bílé pozadí — canvas na webu má proto bílý
-zaoblený podklad (vypadá jako produktová karta na krémové sekci).
-Transparentní pozadí není potřeba.
+Poznámka: skript od v2 produkuje průhledné výřezy — canvas sedí přímo
+na krémovém pozadí sekce, stejně jako statické fotky.

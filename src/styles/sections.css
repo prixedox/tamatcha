@@ -135,7 +135,6 @@ main section[id]{scroll-margin-top:calc(72px + .75rem)}
 .showcase-on .head{max-width:none}
 .showcase__stage{display:grid;grid-template-columns:auto minmax(0,22rem);align-items:center;justify-content:center;gap:clamp(1.5rem,4vw,3.5rem);margin-top:1.6rem}
 .showcase__img,.showcase__canvas{grid-area:1/1;height:min(48vh,430px);width:auto;justify-self:center}
-.showcase__canvas{background:#fff;border-radius:var(--r)}
 .showcase__cap{grid-area:1/2}
 .showcase__title{font-size:clamp(1.8rem,3.4vw,2.6rem)}
 .showcase__formula{color:var(--coal-60);margin-top:.6rem}
