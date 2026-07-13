@@ -3,7 +3,7 @@
 .section{position:relative;padding-block:var(--sp-section)}
 .head{max-width:660px}
 .head.center{margin-inline:auto;text-align:center}
-.eyebrow{display:inline-block;font-weight:700;font-size:.76rem;letter-spacing:.18em;color:var(--gold);margin-bottom:1rem}
+.eyebrow{display:inline-block;font-weight:700;font-size:.76rem;letter-spacing:.18em;color:var(--gold-text);margin-bottom:1rem}
 h1,h2,h3,h4{font-family:var(--display);font-weight:600;color:var(--emerald);line-height:1.06}
 h1{font-size:clamp(2.7rem,6.4vw,4.6rem);letter-spacing:-.015em}
 h1 em{display:block;font-style:normal}
@@ -11,6 +11,7 @@ h2{font-size:clamp(2rem,4.2vw,3rem);letter-spacing:-.01em}
 h3{font-size:1.35rem}
 .lead{font-size:1.08rem;color:var(--coal-60);margin-top:1.1rem}
 .tnum{font-variant-numeric:tabular-nums}
+main section[id]{scroll-margin-top:calc(72px + .75rem)}
 
 /* watermark: giant pictogram, tinted via CSS mask (alpha of the PNG) */
 .wm{position:absolute;z-index:0;pointer-events:none;background:var(--watermark);
@@ -116,7 +117,7 @@ h3{font-size:1.35rem}
 
 /* ===== visit (burgundy band, like the flyer footer) ===== */
 .visit{background:var(--burgundy);color:var(--cream);overflow:hidden}
-.visit .eyebrow{color:var(--gold)}
+.visit .eyebrow{color:var(--cream-80)}
 .visit h2{color:var(--cream)}
 .visit__wm{background:rgba(230,226,218,.05);width:min(70vw,760px);aspect-ratio:1;right:-10%;bottom:-24%}
 .visit__grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:2.5rem;margin-top:3rem}

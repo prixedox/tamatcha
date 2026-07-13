@@ -41,4 +41,10 @@ test.describe('no JavaScript', () => {
     const bg = await page.locator('.nav').evaluate((el) => getComputedStyle(el).backgroundColor)
     expect(bg).not.toBe('rgba(0, 0, 0, 0)')
   })
+
+  test('anchor navigation lands below the fixed nav without JS', async ({ page }) => {
+    await page.goto('./#menu')
+    const top = await page.evaluate(() => document.getElementById('menu')!.getBoundingClientRect().top)
+    expect(top).toBeGreaterThanOrEqual(72)
+  })
 })
