@@ -66,3 +66,13 @@ pin + procházení pěti drinků, ale stage je vždy statická fotka.
 - Turntable frames pro další 4 drinky (rotace teď žije jen v Rituálu
   s Fizz; případný drink-switcher v Rituálu je budoucí nápad).
 - Změny textů kroků, menu, kontaktů.
+
+## Dodatek (2026-07-13, schváleno): mobilní rotace bez pinu
+
+Na mobilu (≤860px) se rotace NEVYNECHÁVÁ, ale běží bez pinu: canvas se
+vloží mezi head a kroky (na střed, ~40vh), a frames scrubuje průchod
+sekce viewportem (`start: 'top 85%'`, `end: 'bottom 15%'`, scrub, bez
+pin). Kroky se odhalují normálním `.reveal` mechanismem (žádná
+`.active` choreografie). Sekce dostane třídu `ritual-mobile`.
+Reduced-motion a chybějící manifest = dnešní statický stav beze změny.
+Desktop pinned scéna beze změny.
