@@ -23,12 +23,14 @@ initMobileNav()
 
 async function boot() {
   try {
-    const [{ initScroll }, { initShowcase }] = await Promise.all([
+    const [{ initScroll }, { initShowcase }, { initRitual }] = await Promise.all([
       import('./scroll'),
       import('./scenes/showcase'),
+      import('./scenes/ritual'),
     ])
     initScroll(reduced)
     initShowcase(reduced)
+    initRitual(reduced)
   } catch (err) {
     // safety net: a failed chunk load must never leave content stuck at
     // opacity:0 (.js .reveal{opacity:0}) — force everything visible.

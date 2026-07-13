@@ -1,7 +1,10 @@
 # Turntable frames — generování a nasazení
 
-Cíl: 360° rotace drinku pro scroll showcase. Web je připravený — stačí
-vygenerovat klip, prohnat ho skriptem a commitnout výstup. Žádná změna kódu.
+Cíl: 360° rotace drinku pro pinned scénu v sekci Rituál („Tři kroky
+k dokonalé matche"). Rotace používá pouze **fizz** — frames ostatních
+drinků nejsou potřeba, dokud Rituál nedostane přepínač drinků. Web je
+připravený — stačí vygenerovat klip, prohnat ho skriptem a commitnout
+výstup. Žádná změna kódu.
 
 ## 1. Vygeneruj klip (Dreamina / Seedance 2.0 — zdarma, bez watermarku)
 

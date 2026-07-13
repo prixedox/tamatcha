@@ -24,26 +24,11 @@ test.describe('drink showcase (JS, desktop)', () => {
     await expect(page.locator('.showcase__title')).toHaveText('Hot Matcha Latté')
   })
 
-  test('turntable manifest upgrades the active drink to canvas scrub', async ({ page }) => {
-    await page.route('**/brand/turntable/fizz/manifest.json', (route) =>
-      route.fulfill({ json: { frames: 4, width: 480, height: 720 } }),
-    )
-    await page.route('**/brand/turntable/fizz/frame-*.webp', (route) =>
-      route.fulfill({ path: 'public/brand/drinks/fizz-480.webp', contentType: 'image/webp' }),
-    )
+  test('stage is always the static photo (rotation lives in the ritual)', async ({ page }) => {
     await page.goto('./')
     await expect(page.locator('.lineup')).toHaveClass(/showcase-on/)
-    // fizz is the first (active) drink — once its manifest loads, canvas replaces the img
-    await expect(page.locator('.showcase__canvas')).toBeVisible()
-    await expect(page.locator('.showcase__img')).toBeHidden()
-    // drinks without a manifest keep the static image
-    const sectionTop = await page
-      .locator('.lineup')
-      .evaluate((el) => el.getBoundingClientRect().top + window.scrollY)
-    await page.evaluate((y) => window.scrollTo(0, y), sectionTop + 0.5 * 3 * 800)
-    await expect(page.locator('.showcase__title')).toHaveText('Hot Matcha Latté')
-    await expect(page.locator('.showcase__canvas')).toBeHidden()
     await expect(page.locator('.showcase__img')).toBeVisible()
+    await expect(page.locator('.showcase__canvas')).toHaveCount(0)
   })
 
   test('thumbnails are keyboard-activatable buttons that jump to the drink', async ({ page }) => {
