@@ -66,6 +66,12 @@ main section[id]{scroll-margin-top:calc(72px + .75rem)}
 .hero__trio{display:flex;align-items:flex-end;justify-content:center}
 .hero__trio img{width:32%;height:auto}
 .hero__trio img:nth-child(2){width:42%;margin-inline:-5%;position:relative;z-index:1}
+@media (prefers-reduced-motion:no-preference){
+  .hero__trio img{animation:heroFloat 6.5s ease-in-out infinite alternate}
+  .hero__trio img:nth-child(2){animation-duration:7.4s;animation-delay:-2.1s}
+  .hero__trio img:nth-child(3){animation-duration:5.8s;animation-delay:-3.6s}
+}
+@keyframes heroFloat{from{transform:translateY(0)}to{transform:translateY(-6px)}}
 
 /* ===== about ===== */
 .about__grid{display:grid;grid-template-columns:1.08fr .92fr;gap:clamp(2rem,5vw,4.5rem);align-items:center}
@@ -83,6 +89,9 @@ main section[id]{scroll-margin-top:calc(72px + .75rem)}
 .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(1.5rem,3.5vw,3rem);margin-top:3.2rem}
 .step{position:relative;padding-top:.6rem}
 .step__n{display:block;font-family:var(--display);font-weight:600;font-size:clamp(3.4rem,7vw,4.8rem);line-height:1;color:var(--emerald);opacity:.14}
+.js .step .step__n{opacity:0;transform:translateY(14px);transition:opacity .6s var(--ease) .25s,transform .6s var(--ease) .25s}
+.js .step.reveal.in .step__n{opacity:.14;transform:none}
+@media (prefers-reduced-motion:reduce){.js .step .step__n{opacity:.14;transform:none;transition:none}}
 .step h3{margin-top:-.9rem}
 .step p{color:var(--coal-60);margin-top:.55rem;font-size:.97rem}
 
@@ -90,6 +99,12 @@ main section[id]{scroll-margin-top:calc(72px + .75rem)}
 .menu{background:#fff}
 .menu__grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.4rem;margin-top:3rem}
 .mcard{display:grid;grid-template-columns:1.1fr .9fr;gap:1rem;background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:1.9rem;overflow:hidden}
+@media (prefers-reduced-motion:no-preference){
+  .mcard{transition:transform .35s var(--ease),border-color .35s var(--ease)}
+  .mcard:hover{transform:translateY(-4px);border-color:var(--emerald)}
+  .mcard__drink{transition:transform .35s var(--ease)}
+  .mcard:hover .mcard__drink{transform:translateY(-6px) scale(1.02)}
+}
 .mcard__body{display:flex;flex-direction:column;min-width:0}
 .mcard h3{font-size:clamp(1.45rem,2.4vw,1.85rem)}
 .formula{color:var(--coal-60);font-size:.93rem;margin-top:.45rem}

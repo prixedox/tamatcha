@@ -44,6 +44,25 @@ export function initScroll(reduced: boolean): void {
     })
   }
 
+  // hero: watermark parallax + drink trio drift (decorative; reduced-motion
+  // users never reach this code — the early return above guards it)
+  const wm = document.querySelector<HTMLElement>('.hero__wm')
+  if (wm) {
+    gsap.to(wm, {
+      y: () => window.innerHeight * 0.24,
+      ease: 'none',
+      scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: true },
+    })
+  }
+  const trio = document.querySelector<HTMLElement>('.hero__trio')
+  if (trio) {
+    gsap.to(trio, {
+      y: -44,
+      ease: 'none',
+      scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: true },
+    })
+  }
+
   // active-section highlight in nav
   document.querySelectorAll<HTMLElement>('main section[id]').forEach((section) => {
     const link = document.querySelector(`.nav__links a[href="#${section.id}"]`)
