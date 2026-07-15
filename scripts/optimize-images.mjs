@@ -5,14 +5,17 @@ import path from 'node:path'
 const SRC = 'source-photos'
 const OUT = 'public/img'
 const jobs = [
-  { file: 'post5_bar.jpg', widths: [480, 640] },
+  // crop trims the baked-in IG caption from the bottom of the frame
+  { file: 'post4_fizz.jpg', widths: [480, 640], crop: { left: 0, top: 0, width: 640, height: 880 } },
 ]
 
 await mkdir(OUT, { recursive: true })
-for (const { file, widths } of jobs) {
+for (const { file, widths, crop } of jobs) {
   const base = path.parse(file).name
   for (const w of widths) {
-    const img = sharp(path.join(SRC, file)).resize({ width: w, withoutEnlargement: true })
+    let img = sharp(path.join(SRC, file))
+    if (crop) img = img.extract(crop)
+    img = img.resize({ width: w, withoutEnlargement: true })
     await img.clone().avif({ quality: 55 }).toFile(`${OUT}/${base}-${w}.avif`)
     await img.clone().webp({ quality: 72 }).toFile(`${OUT}/${base}-${w}.webp`)
     await img.clone().jpeg({ quality: 78, mozjpeg: true }).toFile(`${OUT}/${base}-${w}.jpg`)
