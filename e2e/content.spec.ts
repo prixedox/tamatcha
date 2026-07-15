@@ -36,6 +36,9 @@ test('all brand-redesign content present with JS', async ({ page }) => {
   const metaDesc = await page.locator('meta[name="description"]').getAttribute('content')
   expect(metaDesc).toContain('Ceremoniální matcha')
   expect(metaDesc).not.toContain('Prémiová')
+  const ogDesc = await page.locator('meta[property="og:description"]').getAttribute('content')
+  expect(ogDesc).toContain('Ceremoniální matcha')
+  expect(ogDesc).not.toContain('Prémiová')
 })
 
 test.describe('no JavaScript', () => {
