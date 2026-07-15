@@ -17,12 +17,12 @@ if (!existsSync(SRC)) {
   process.exit(1)
 }
 
-// mapping verified against the in-store screens (Obrazovky 1–7)
+// hot/iced latte pairing corrected per owner feedback 2026-07-15
 const DRINKS = [
   ['DSC00227.png', 'fizz'],
-  ['DSC00231.png', 'latte-iced'],
+  ['DSC00231.png', 'latte-hot'],
   ['DSC00232.png', 'yerba'],
-  ['DSC00233.png', 'latte-hot'],
+  ['DSC00233.png', 'latte-iced'],
   ['DSC00234.png', 'cloud'],
 ]
 
