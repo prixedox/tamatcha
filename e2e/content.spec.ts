@@ -7,7 +7,7 @@ const MUST_HAVE = [
   '( matcha, tonic, pyré dle výběru )', 'Kokos',
   '450 ml', '119,- Kč', '79,- Kč',
   'Prosíváme', 'Mícháme pastu', 'Došleháváme',
-  'Na Hradbách 1481/6', '+420 605 000 456', 'Drink zdarma?',
+  'Na Hradbách 1481/6', '+420 605 000 456',
   '© 2026 Tamatcha · Ostrava',
 ]
 
@@ -15,6 +15,7 @@ const MUST_NOT = [
   'Prémiová', 'prémiová',
   'Podáváme',
   'Pistácie', 'soda',
+  'Drink zdarma',
 ]
 
 test('all brand-redesign content present with JS', async ({ page }) => {

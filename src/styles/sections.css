@@ -133,12 +133,7 @@ main section[id]{scroll-margin-top:calc(72px + .75rem)}
 .lineup__item{text-align:center}
 .lineup__item img{width:100%;height:auto}
 .lineup__item figcaption{font-family:var(--display);font-weight:500;color:var(--emerald);margin-top:1rem;font-size:1rem}
-.lineup__foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1.5rem;margin-top:3.2rem;border-top:1px solid var(--line);padding-top:2.2rem}
-.freecard{display:flex;gap:1rem;align-items:flex-start;max-width:34rem}
-.freecard .gift{flex:none;width:44px;height:44px;display:grid;place-items:center;border:1.5px solid var(--gold);border-radius:12px;color:var(--gold)}
-.freecard .gift svg{width:20px;height:20px}
-.freecard .big{font-family:var(--display);font-weight:600;font-size:1.15rem;color:var(--emerald)}
-.freecard p{color:var(--coal-60);font-size:.95rem;margin-top:.2rem}
+.lineup__foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:1.5rem;margin-top:3.2rem;border-top:1px solid var(--line);padding-top:2.2rem}
 
 /* ===== drink showcase (JS-enhanced lineup; static strip is the fallback) ===== */
 .showcase-on{padding-block:clamp(2rem,4vw,3rem)}
@@ -198,5 +193,4 @@ main section[id]{scroll-margin-top:calc(72px + .75rem)}
   .nav.mobile-open .nav__links{flex-direction:column;align-items:flex-start;gap:1.1rem}
   .mcard{grid-template-columns:1fr}
   .mcard__drink{width:min(60%,220px);justify-self:start;order:-1}
-  .lineup__foot{flex-direction:column;align-items:flex-start}
 }
