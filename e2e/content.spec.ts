@@ -27,6 +27,15 @@ test('all brand-redesign content present with JS', async ({ page }) => {
   for (const s of MUST_NOT) expect(text, `stale copy: ${s}`).not.toContain(s)
   await expect(page.locator('.mcard')).toHaveCount(4)
   await expect(page.locator('.lineup__item')).toHaveCount(5)
+
+  const aboutImg = page.locator('.about__media img')
+  await aboutImg.scrollIntoViewIfNeeded()
+  await expect
+    .poll(() => aboutImg.evaluate((el) => (el as HTMLImageElement).naturalWidth))
+    .toBeGreaterThan(0)
+  const metaDesc = await page.locator('meta[name="description"]').getAttribute('content')
+  expect(metaDesc).toContain('Ceremoniální matcha')
+  expect(metaDesc).not.toContain('Prémiová')
 })
 
 test.describe('no JavaScript', () => {

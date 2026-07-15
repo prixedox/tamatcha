@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test'
 
-test('menu: 4 drinks, screens-version prices, real photos load', async ({ page }) => {
+test('menu: 4 drinks, flyer prices, real photos load', async ({ page }) => {
   await page.goto('./')
   await expect(page.locator('.mcard')).toHaveCount(4)
   await expect(page.locator('.mcard .price')).toHaveText([
