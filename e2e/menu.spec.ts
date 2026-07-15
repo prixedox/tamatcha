@@ -16,11 +16,13 @@ test('menu: 4 drinks, screens-version prices, real photos load', async ({ page }
   }
 })
 
-test('menu: screens wording, not flyer wording', async ({ page }) => {
+test('menu matches the current flyer wording', async ({ page }) => {
   await page.goto('./')
   const text = await page.locator('#menu').innerText()
-  expect(text).toContain('( matcha, soda, pyré dle výběru )')
-  expect(text).toContain('( matcha cloud, mléko, pyré dle výběru )')
-  expect(text).not.toContain('tonic')
-  expect(text).not.toContain('kokosová voda')
+  expect(text).toContain('( matcha, tonic, pyré dle výběru )')
+  expect(text).toContain('( matcha cloud, kokosová voda, pyré dle výběru, posyp )')
+  expect(text).toContain('( matcha, ovesné/mandlové mléko, sirup dle výběru, posyp )')
+  expect(text).toContain('Kokos')
+  expect(text).not.toContain('soda')
+  expect(text).not.toContain('Pistácie')
 })

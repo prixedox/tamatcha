@@ -4,7 +4,7 @@ const MUST_HAVE = [
   'Ceremoniální matcha', 'čerstvě našleháno.', 'První Matcha Bar v Ostravě',
   'Z Kagoshimy',
   'Matcha Fizz', 'Matcha Cloud', 'Iced / Hot Matcha Latté', 'Iced Yerba Maté',
-  '( matcha, soda, pyré dle výběru )', 'Pistácie',
+  '( matcha, tonic, pyré dle výběru )', 'Kokos',
   '450 ml', '119,- Kč', '79,- Kč',
   'Prosíváme', 'Mícháme pastu', 'Došleháváme',
   'Na Hradbách 1481/6', '+420 605 000 456', 'Drink zdarma?',
@@ -14,6 +14,7 @@ const MUST_HAVE = [
 const MUST_NOT = [
   'Prémiová', 'prémiová',
   'Podáváme',
+  'Pistácie', 'soda',
 ]
 
 test('all brand-redesign content present with JS', async ({ page }) => {

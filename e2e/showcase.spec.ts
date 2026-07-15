@@ -5,7 +5,7 @@ test.describe('drink showcase (JS, desktop)', () => {
     await page.goto('./')
     await expect(page.locator('.lineup')).toHaveClass(/showcase-on/)
     await expect(page.locator('.showcase__title')).toHaveText('Matcha Fizz')
-    await expect(page.locator('.showcase__formula')).toHaveText('( matcha, soda, pyré dle výběru )')
+    await expect(page.locator('.showcase__formula')).toHaveText('( matcha, tonic, pyré dle výběru )')
     await expect(page.locator('.lineup__item.is-active figcaption')).toHaveText('Matcha Fizz')
   })
 
