@@ -6,13 +6,14 @@ const MUST_HAVE = [
   'Matcha Fizz', 'Matcha Cloud', 'Iced / Hot Matcha Latté', 'Iced Yerba Maté',
   '( matcha, soda, pyré dle výběru )', 'Pistácie',
   '450 ml', '119,- Kč', '79,- Kč',
-  'Prosíváme', 'Šleháme', 'Podáváme',
+  'Prosíváme', 'Mícháme pastu', 'Došleháváme',
   'Na Hradbách 1481/6', '+420 605 000 456', 'Drink zdarma?',
   '© 2026 Tamatcha · Ostrava',
 ]
 
 const MUST_NOT = [
   'Prémiová', 'prémiová',
+  'Podáváme',
 ]
 
 test('all brand-redesign content present with JS', async ({ page }) => {
